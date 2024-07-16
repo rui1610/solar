@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "name": "Python Debugger: Current File with Arguments",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal",
-            "args": "-i 10 -a 192.168.178.63 -p 502 -u 3 30775"
+            "console": "integratedTerminal"
         }
     ]
 }
