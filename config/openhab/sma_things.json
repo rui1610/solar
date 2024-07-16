@@ -1,0 +1,17 @@
+[
+    {
+        "label": "Verbrauch Haus",
+        "channelID": "30775",
+        "valueType": "int32"
+    },
+    {
+        "label": "Tagesertrag",
+        "channelID": "30517",
+        "valueType": "int32"
+    },
+    {
+        "label": "Batterie aktuelle Entladeleistung",
+        "channelID": "31395",
+        "valueType": "int64"
+    }
+]

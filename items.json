@@ -1,0 +1,77 @@
+[
+    {
+        "link": "http://192.168.178.78:8080/rest/items/SMA_Tagesertrag_30517_Value_as_Number",
+        "state": "6766",
+        "metadata": {
+            "semantics": {
+                "value": "Point"
+            }
+        },
+        "editable": true,
+        "type": "Number",
+        "name": "SMA_Tagesertrag_30517_Value_as_Number",
+        "label": "SMA Tagesertrag",
+        "category": "",
+        "tags": [
+            "Point"
+        ],
+        "groupNames": []
+    },
+    {
+        "members": [],
+        "link": "http://192.168.178.78:8080/rest/items/SMA_Energy_Meter",
+        "state": "NULL",
+        "metadata": {
+            "semantics": {
+                "value": "Equipment"
+            }
+        },
+        "editable": true,
+        "type": "Group",
+        "name": "SMA_Energy_Meter",
+        "label": "SMA Energy Meter",
+        "category": "",
+        "tags": [
+            "Equipment"
+        ],
+        "groupNames": []
+    },
+    {
+        "link": "http://192.168.178.78:8080/rest/items/SMA_Data_30775_Value_as_Number",
+        "state": "3900 W",
+        "unitSymbol": "W",
+        "metadata": {
+            "semantics": {
+                "value": "Point"
+            }
+        },
+        "editable": true,
+        "type": "Number:Power",
+        "name": "SMA_Data_30775_Value_as_Number",
+        "label": "SMA Verbrauch Haus",
+        "category": "",
+        "tags": [
+            "Point"
+        ],
+        "groupNames": []
+    },
+    {
+        "link": "http://192.168.178.78:8080/rest/items/SMA_Data_31395_Value_as_Number",
+        "state": "0 W",
+        "unitSymbol": "W",
+        "metadata": {
+            "semantics": {
+                "value": "Point"
+            }
+        },
+        "editable": true,
+        "type": "Number:Power",
+        "name": "SMA_Data_31395_Value_as_Number",
+        "label": "SMA Batterie aktuelle Entladeleistung",
+        "category": "",
+        "tags": [
+            "Point"
+        ],
+        "groupNames": []
+    }
+]

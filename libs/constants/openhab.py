@@ -1,0 +1,1 @@
+SMA_MODBUS_BRIDGE_UID = "modbus:tcp:30413f8c13"
