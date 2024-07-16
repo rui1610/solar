@@ -1,12 +1,15 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put
 from libs.constants.sma import SMA_MODBUS_BRIDGE_UID
-from libs.constants.files import FILE_CONFIG_OPENHAB_SMA_THINGS
+from libs.constants.files import FILE_CONFIG_SMA_METADATA
 import json
 
 
 def get_sma_things():
     # read file with SMA things
-    with open(FILE_CONFIG_OPENHAB_SMA_THINGS, "r") as f:
+    # with open(FILE_CONFIG_OPENHAB_SMA_THINGS, "r") as f:
+    #     data = json.load(f)
+    #     return data
+    with open(FILE_CONFIG_SMA_METADATA, "r") as f:
         data = json.load(f)
         return data
 
@@ -99,12 +102,27 @@ def add_item_to_data(item: dict, item_name: str) -> dict:
 
 # Add the SMA poller
 def add_sma_poller(label: str, channelID: str, valueType: str) -> dict:
-    length = 0
-    if valueType == "int32":
-        length = 2
+    # set the default length
+    length = 2
 
-    if valueType == "int64":
-        length = 4
+    # set the length based on the valueType
+    match valueType:
+        case "int32":
+            length = 2
+        case "int64":
+            length = 4
+        case "STR32":
+            length = 32
+        case "U32":
+            length = 2
+        case "U64":
+            length = 4
+        case "S32":
+            length = 2
+        case "U16":
+            length = 1
+        case "S16":
+            length = 1
 
     # Build the poller thing
     poller = build_modbus_poller(
@@ -117,6 +135,7 @@ def add_sma_poller(label: str, channelID: str, valueType: str) -> dict:
     return response_poller
 
 
+# Add the SMA thing
 def add_sma_thing(
     label: str, channelID: str, valueType: str, poller_bridgeUID: str
 ) -> dict:
