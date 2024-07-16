@@ -1,5 +1,14 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put
-from libs.constants.openhab import SMA_MODBUS_BRIDGE_UID
+from libs.constants.sma import SMA_MODBUS_BRIDGE_UID
+from libs.constants.files import FILE_CONFIG_OPENHAB_SMA_THINGS
+import json
+
+
+def get_sma_things():
+    # read file with SMA things
+    with open(FILE_CONFIG_OPENHAB_SMA_THINGS, "r") as f:
+        data = json.load(f)
+        return data
 
 
 # Build the poller json payload

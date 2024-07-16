@@ -1,4 +1,4 @@
-from libs.openhab.things import add_sma_channel, delete_sma_channel
+from libs.devices.sma.things import add_sma_channel, delete_sma_channel
 from libs.openhab.generic import get_sma_things, openhab_get
 import json
 

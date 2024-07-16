@@ -2,7 +2,7 @@ import requests
 import sys
 from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
-from libs.constants.files import FILE_CONFIG_OPENHAB, FILE_CONFIG_OPENHAB_SMA_THINGS
+from libs.constants.files import FILE_CONFIG_OPENHAB
 import json
 
 
@@ -125,10 +125,3 @@ def openhab_get(type: str):
     except requests.exceptions.RequestException as err:
         print(err)
         sys.exit(1)
-
-
-def get_sma_things():
-    # read file with SMA things
-    with open(FILE_CONFIG_OPENHAB_SMA_THINGS, "r") as f:
-        data = json.load(f)
-        return data
