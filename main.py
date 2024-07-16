@@ -1,6 +1,6 @@
 from libs.devices.sma.things import get_sma_things
 from libs.model.sma_tripower import InverterMetadata
-from libs.devices.sma import add_sma_channel, delete_sma_channel
+from libs.devices.sma.things import add_sma_channel, delete_sma_channel
 
 uids = []
 # Read-in the SMA metadata

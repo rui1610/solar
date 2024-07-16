@@ -21,4 +21,4 @@ class InverterMetadata:
         if self.label == "-":
             self.label = raw_data["Kanal"]
         self.channelID = int(raw_data["SMA Modbus Registeradresse"])
-        self.valueType = raw_data["Value Type"]
+        self.valueType = raw_data["SMA Modbus Datentyp"]
