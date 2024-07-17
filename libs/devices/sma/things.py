@@ -69,7 +69,7 @@ def build_modbus_item(label: str, channelID: str) -> dict:
     item_name = f"SMA {label} {channelID}_Value_as_Number".replace(" ", "_")
     item_label = f"SMA {label} ({channelID})"
 
-    data = (
+    data = [
         {
             "link": f"http://192.168.178.78:8080/rest/items/{item_name}",
             "state": "3900 W",
@@ -82,15 +82,15 @@ def build_modbus_item(label: str, channelID: str) -> dict:
             "category": "",
             "tags": ["Point"],
             "groupNames": [],
-        },
-    )
+        }
+    ]
     return data
 
 
 # Add the item as linkedItem to the data thing
 def add_item_to_data(item: dict, item_name: str) -> dict:
     # detect the right channel for the item with channelTypeUID = "modbus:number-type"
-    for key, value in item["channels"].items():
+    for value in item["channels"]:
         if value["channelTypeUID"] == "modbus:number-type":
             # ... and add the item to the linkedItems
             value["linkedItems"] = [item_name]
@@ -158,7 +158,7 @@ def add_sma_item(label: str, channelID: str) -> dict:
     # Build the item
     item = build_modbus_item(label=label, channelID=channelID)
     # Create the item
-    item_response = openhab_post(type="item", data=item)
+    item_response = openhab_put(type="item", data=item, id=None)
     response_data = item_response.json()
 
     return response_data
@@ -194,7 +194,7 @@ def add_sma_channel(uids: list, label: str, channelID: str, valueType: str) -> d
 
     # Create the item
     response_item = add_sma_item(label=label, channelID=channelID)
-    item_name = response_item["name"]
+    item_name = response_item[0]["name"]
 
     # Create the data thing
     response_data = add_sma_data(

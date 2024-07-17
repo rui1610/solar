@@ -50,7 +50,11 @@ def openhab_put(type: str, id: str, data: dict):
         "Accept": "application/json",
         "Authorization": "Bearer %s" % token,
     }
-    url = f"{base_url}/{type}s/{id}"
+    url = None
+    if id is not None:
+        url = f"{base_url}/{type}s/{id}"
+    else:
+        url = f"{base_url}/{type}s"
 
     # convert data to a string
     data = json.dumps(data)
