@@ -6,6 +6,7 @@ class InverterMetadata:
     label: str
     channelID: int
     valueType: str
+    objectType: str
 
     def __str__(self):
         return f"{self.label} ({self.channelID})"
@@ -38,3 +39,5 @@ class InverterMetadata:
                 self.valueType = "uint16"
             case "S16":
                 self.valueType = "int16"
+
+        self.objectType = raw_data["Objekttyp"]

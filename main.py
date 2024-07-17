@@ -2,12 +2,15 @@ from libs.devices.sma.things import get_sma_things
 from libs.model.sma_tripower import InverterMetadata
 from libs.devices.sma.things import add_sma_channel, delete_sma_channel
 
-uids = []
 # Read-in the SMA metadata
+uids = []
 for thing in get_sma_things():
     # convert the thing to a SMA Tripower metadata object
     this = InverterMetadata(thing)
-    if this.valueType in ["int16", "int32", "int64", "uint16", "uint32", "uint64"]:
+    if (
+        this.valueType in ["int16", "int32", "int64", "uint16", "uint32", "uint64"]
+        and this.objectType == "Messwert"
+    ):
         # Add the SMA channel
         uids = add_sma_channel(
             uids=uids,

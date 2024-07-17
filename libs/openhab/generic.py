@@ -1,13 +1,13 @@
 import requests
-import sys
 from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
 from libs.constants.files import FILE_CONFIG_OPENHAB
 import json
 import time
 import urllib.parse
+import sys
 
-SLEEP_TIME_SECONDS = 2
+SLEEP_TIME_SECONDS = 3
 
 config = dotenv_values(FILE_CONFIG_OPENHAB)
 ip = config["OPENHAB_IP"]
@@ -135,13 +135,13 @@ def openhab_get(type: str):
         return response
     except requests.exceptions.HTTPError as errh:
         print(errh)
-        sys.exit(1)
+        # sys.exit(1)
     except requests.exceptions.ConnectionError as errc:
         print(errc)
-        sys.exit(1)
+        # sys.exit(1)
     except requests.exceptions.Timeout as errt:
         print(errt)
-        sys.exit(1)
+        # sys.exit(1)
     except requests.exceptions.RequestException as err:
         print(err)
-        sys.exit(1)
+        # sys.exit(1)
