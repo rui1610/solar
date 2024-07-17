@@ -50,7 +50,7 @@ def build_modbus_data(bridgeUID: str, label: str, start: int, valueType: str) ->
             "readValueType": valueType,
             "readTransform": "default",
             "writeTransform": "default",
-            "readStart": start,
+            "readStart": str(start),
             "updateUnchangedValuesEveryMillis": 5000,
             "writeMaxTries": 3,
         },
@@ -66,24 +66,28 @@ def build_modbus_data(bridgeUID: str, label: str, start: int, valueType: str) ->
 
 # Build the item json payload
 def build_modbus_item(label: str, channelID: str) -> dict:
-    item_name = f"SMA {label} {channelID}_Value_as_Number".replace(" ", "_")
-    item_label = f"SMA {label} ({channelID})"
+    item_name = f"Item SMA {label} {channelID}_Value_as_Number".replace(" ", "_")
+    item_label = f"Item SMA {label} ({channelID})"
 
-    data = [
-        {
-            "link": f"http://192.168.178.78:8080/rest/items/{item_name}",
-            "state": "3900 W",
-            "unitSymbol": "W",
-            "metadata": {"semantics": {"value": "Point"}},
-            "editable": True,
-            "type": "Number:Power",
-            "name": item_name,
-            "label": item_label,
-            "category": "",
-            "tags": ["Point"],
-            "groupNames": [],
-        }
-    ]
+    data = {
+        "category": "",
+        "groupNames": [],
+        "label": item_label,
+        "name": item_name,
+        "tags": ["Point"],
+        "type": "Number",
+    }
+
+    return data
+
+
+# Build the item json payload
+def build_modbus_item_link(channelUID: str, itemName: str) -> dict:
+    data = {
+        "channelUID": f"{channelUID}:number",
+        "configuration": {},
+        "itemName": itemName,
+    }
     return data
 
 
@@ -158,10 +162,20 @@ def add_sma_item(label: str, channelID: str) -> dict:
     # Build the item
     item = build_modbus_item(label=label, channelID=channelID)
     # Create the item
-    item_response = openhab_put(type="item", data=item, id=None)
+    item_response = openhab_put(type="item", data=item, id=item["name"])
     response_data = item_response.json()
 
     return response_data
+
+
+# Add the SMA item link
+def add_sma_item_link(dataID: str, itemName: str, channelUID: str) -> dict:
+    # Build the item
+    item = build_modbus_item_link(channelUID=channelUID, itemName=itemName)
+    # Create the item link
+    item_response = openhab_put(
+        type="link", data=item, id=f"{itemName}/{dataID}:number"
+    )
 
 
 # Add the SMA data thing
@@ -192,10 +206,6 @@ def add_sma_channel(uids: list, label: str, channelID: str, valueType: str) -> d
     poller_bridgeUID = response_poller["UID"]
     uids.append(poller_bridgeUID)
 
-    # Create the item
-    response_item = add_sma_item(label=label, channelID=channelID)
-    item_name = response_item[0]["name"]
-
     # Create the data thing
     response_data = add_sma_data(
         label=label,
@@ -205,9 +215,16 @@ def add_sma_channel(uids: list, label: str, channelID: str, valueType: str) -> d
     )
 
     # append the item name to the data thing as a linked item
-    response_data = add_item_to_data(item=response_data, item_name=item_name)
+    # response_data = add_item_to_data(item=response_data, item_name=item_name)
     data_uid = response_data["UID"]
     uids.append(data_uid)
+
+    # Create the item
+    # label_item = f"{label}_Value_as_Number"
+    response_item = add_sma_item(label=label, channelID=channelID)
+    item_name = response_item["name"]
+
+    add_sma_item_link(dataID=data_uid, itemName=item_name, channelUID=data_uid)
 
     # reverse the list of UIDs
     uids.reverse()

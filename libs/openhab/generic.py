@@ -4,7 +4,10 @@ from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
 from libs.constants.files import FILE_CONFIG_OPENHAB
 import json
+import time
+import urllib.parse
 
+SLEEP_TIME_SECONDS = 2
 
 config = dotenv_values(FILE_CONFIG_OPENHAB)
 ip = config["OPENHAB_IP"]
@@ -14,6 +17,9 @@ token = config["OPENHAB_TOKEN"]
 
 
 def openhab_post(type: str, data):
+    # Add a delay for not getting into any throteling issues
+    time.sleep(SLEEP_TIME_SECONDS)
+
     base_url = f"http://{ip}:8080/rest"
     headers = {
         "Content-type": "application/json",
@@ -44,6 +50,9 @@ def openhab_post(type: str, data):
 
 
 def openhab_put(type: str, id: str, data: dict):
+    # Add a delay for not getting into any throteling issues
+    time.sleep(SLEEP_TIME_SECONDS)
+
     base_url = f"http://{ip}:8080/rest"
     headers = {
         "Content-type": "application/json",
@@ -52,6 +61,7 @@ def openhab_put(type: str, id: str, data: dict):
     }
     url = None
     if id is not None:
+        id = urllib.parse.quote(id)
         url = f"{base_url}/{type}s/{id}"
     else:
         url = f"{base_url}/{type}s"
@@ -78,6 +88,9 @@ def openhab_put(type: str, id: str, data: dict):
 
 
 def openhab_delete(type: str, uid: str):
+    # Add a delay for not getting into any throteling issues
+    time.sleep(SLEEP_TIME_SECONDS)
+
     base_url = f"http://{ip}:8080/rest"
     auth = HTTPBasicAuth(username=user, password=password)
     headers = {
@@ -107,6 +120,9 @@ def openhab_delete(type: str, uid: str):
 
 
 def openhab_get(type: str):
+    # Add a delay for not getting into any throteling issues
+    time.sleep(SLEEP_TIME_SECONDS)
+
     base_url = f"http://{ip}:8080/rest"
     auth = HTTPBasicAuth(username=user, password=password)
     headers = {"Content-type": "application/json", "Accept": "application/json"}

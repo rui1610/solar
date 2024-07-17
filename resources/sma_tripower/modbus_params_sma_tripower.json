@@ -10,9 +10,9 @@
         "Schrittweite": "1",
         "Schreib-Level": "-",
         "Grid Guard": "-",
-        "SMA Modbus Registeradresse": "30517",
+        "SMA Modbus Registeradresse": "30535",
         "Anzahl zusammenh\u00e4ngender SMA Modbus Register": "4",
-        "SMA Modbus Datentyp": "U64",
+        "SMA Modbus Datentyp": "U32",
         "SMA Modbus Datenformat": "FIX0",
         "SMA Modbus Zugriff": "RO"
     }

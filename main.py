@@ -7,10 +7,14 @@ uids = []
 for thing in get_sma_things():
     # convert the thing to a SMA Tripower metadata object
     this = InverterMetadata(thing)
-    # Add the SMA channel
-    uids = add_sma_channel(
-        uids=uids, label=this.label, channelID=this.channelID, valueType=this.valueType
-    )
+    if this.valueType in ["int16", "int32", "int64", "uint16", "uint32", "uint64"]:
+        # Add the SMA channel
+        uids = add_sma_channel(
+            uids=uids,
+            label=this.label,
+            channelID=this.channelID,
+            valueType=this.valueType,
+        )
 
 delete_sma_channel(uids=uids)
 
