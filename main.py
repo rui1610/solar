@@ -2,10 +2,13 @@ from libs.devices.sma.inverter import get_sma_things
 from libs.model.sma_tripower import InverterMetadata
 from libs.devices.sma.inverter import add_sma_channel
 from libs.devices.kostal.inverter import add_kostal_inverter_thing
+from libs.openhab.generic import delete_all_objects
+
+delete_all_objects()
 
 
-add_kostal_inverter_thing()
 exit()
+add_kostal_inverter_thing()
 
 
 # Read-in the SMA metadata

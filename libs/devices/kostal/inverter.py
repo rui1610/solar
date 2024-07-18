@@ -1,13 +1,13 @@
 import os
-from dotenv import dotenv_values
 from libs.constants.files import FILE_CONFIG_SECRETS
 from libs.openhab.generic import openhab_post, openhab_get
+from dotenv import dotenv_values
 
 config = dotenv_values(FILE_CONFIG_SECRETS)
 
 
 # Build the poller json payload
-def build_kostal_thing(name: str = "KOSTAL PIKO 4.2") -> dict:
+def build_kostal_thing(name: str) -> dict:
     myuuid = os.urandom(5).hex()
 
     ip = config["KOSTAL_PICO_IP"]

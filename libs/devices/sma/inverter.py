@@ -1,8 +1,12 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, openhab_get
 from libs.constants.sma_inverter import SMA_MODBUS_BRIDGE_UID, CHANNELS_TO_USE
-from libs.constants.files import FILE_CONFIG_SMA_METADATA
+from libs.constants.files import FILE_CONFIG_SMA_METADATA, FILE_CONFIG_SECRETS
 import json
+import os
 from libs.model.sma_tripower import InverterMetadata
+from dotenv import dotenv_values
+
+config = dotenv_values(FILE_CONFIG_SECRETS)
 
 
 def get_sma_things():
@@ -265,6 +269,28 @@ def exists_sma_inverter():
             return thing
 
     return result
+
+
+def build_sma_modbus_bridge(name: str):
+    myuuid = os.urandom(5).hex()
+
+    ip = config["SMA_INVERTER_IP"]
+    port = config["SMA_INVERTER_PORT"]
+    id = config["SMA_INVERTER_ID"]
+
+    data = {
+        "UID": f"modbus:modbus:{myuuid}",
+        "label": name,
+        "configuration": {"host": ip, "id": id, "port": port},
+        "channels": [],
+        "thingTypeUID": "modbus:tcp",
+        "ID": myuuid,
+    }
+
+    return data
+
+
+# def add_sma_modbus_bridge():
 
 
 # Add the SMA thing

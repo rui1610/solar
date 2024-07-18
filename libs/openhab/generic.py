@@ -145,3 +145,24 @@ def openhab_get(type: str):
     except requests.exceptions.RequestException as err:
         print(err)
         # sys.exit(1)
+
+
+def delete_all_objects():
+    # Don't change the sequence of the objectTypes!
+    objectTypes = ["item", "link", "thing"]
+
+    for objectType in objectTypes:
+        response = openhab_get(objectType)
+        myObjects = response.json()
+
+        for myObject in myObjects:
+            try:
+                match myObject:
+                    case "thing":
+                        openhab_delete(uid=myObject["UID"], type=objectType)
+                    case "link":
+                        openhab_delete(uid=myObject["UID"], type=objectType)
+                    case "item":
+                        openhab_delete(uid=myObject["label"], type=objectType)
+            except Exception as e:
+                print(e)
