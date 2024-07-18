@@ -58,6 +58,9 @@ for row in json_data:
         if isinstance(value, str):
             row[key] = value.replace("zusammenh\u00e4ngender", "zusammenhaengender")
 
+# remove all rows that don't have the "Objekttyp" set to "Messwert"
+json_data = [row for row in json_data if row.get("Objekttyp") == "Messwert"]
+
 # Step 4: Write the JSON data to a file
 with open(Path(FILE_CONFIG_SMA_METADATA), "w") as json_file:
     json.dump(json_data, json_file, indent=4)

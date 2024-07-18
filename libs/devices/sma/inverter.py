@@ -1,6 +1,6 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, openhab_get
-from libs.constants.sma_inverter import CHANNELS_TO_USE
 from libs.constants.files import FILE_CONFIG_SMA_METADATA, FILE_CONFIG_SECRETS
+from libs.constants.sma_inverter import CHANNELS_TO_USE
 import json
 import os
 from libs.model.sma_tripower import InverterMetadata
@@ -16,12 +16,9 @@ def get_sma_things():
         data = json.load(f)
 
     for thing in data:
-        if (
-            thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE)
-            and thing["Objekttyp"]
-            and thing["SMA Modbus Datentyp"]
-            in ["U32", "S32", "U64", "S64", "U16", "S16"]
-        ):
+        if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
+            "SMA Modbus Datentyp"
+        ] in ["U32", "S32", "U64", "S64", "U16", "S16"]:
             result.append(thing)
 
     return result
@@ -85,7 +82,7 @@ def build_modbus_item(label: str, channelID: str) -> dict:
     item_label = f"Item SMA {label} ({channelID})"
 
     data = {
-        "category": "",
+        "category": "Energy",
         "groupNames": [],
         "label": item_label,
         "name": item_name,
@@ -104,19 +101,6 @@ def build_modbus_item_link(channelUID: str, itemName: str) -> dict:
         "itemName": itemName,
     }
     return data
-
-
-# Add the item as linkedItem to the data thing
-def add_item_to_data(item: dict, item_name: str) -> dict:
-    # detect the right channel for the item with channelTypeUID = "modbus:number-type"
-    for value in item["channels"]:
-        if value["channelTypeUID"] == "modbus:number-type":
-            # ... and add the item to the linkedItems
-            value["linkedItems"] = [item_name]
-
-    data_response = openhab_put(type="thing", data=item, id=item["UID"])
-
-    return data_response
 
 
 # Add the SMA poller
@@ -231,8 +215,6 @@ def add_sma_channel(
         poller_bridgeUID=poller_bridgeUID,
     )
 
-    # append the item name to the data thing as a linked item
-    # response_data = add_item_to_data(item=response_data, item_name=item_name)
     data_uid = response_data["UID"]
     uids.append(data_uid)
 
