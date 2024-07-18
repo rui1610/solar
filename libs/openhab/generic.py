@@ -6,7 +6,7 @@ import time
 import urllib.parse
 import sys
 
-SLEEP_TIME_SECONDS = 2
+SLEEP_TIME_SECONDS = 1
 
 config = dotenv_values(FILE_CONFIG_SECRETS)
 ip = config["OPENHAB_IP"]
@@ -88,7 +88,7 @@ def openhab_put(type: str, id: str, data: dict):
 
 def openhab_delete(type: str, uid: str):
     # Add a delay for not getting into any throteling issues
-    # time.sleep(SLEEP_TIME_SECONDS)
+    time.sleep(SLEEP_TIME_SECONDS)
 
     base_url = f"http://{ip}:8080/rest"
     headers = {
