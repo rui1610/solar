@@ -1,7 +1,7 @@
-from libs.devices.sma.things import get_sma_things
+from libs.devices.sma.inverter import get_sma_things
 from libs.model.sma_tripower import InverterMetadata
-from libs.devices.sma.things import add_sma_channel
-from libs.devices.kostal.things import add_kostal_inverter_thing
+from libs.devices.sma.inverter import add_sma_channel
+from libs.devices.kostal.inverter import add_kostal_inverter_thing
 
 
 add_kostal_inverter_thing()

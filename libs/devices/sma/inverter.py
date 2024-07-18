@@ -1,5 +1,5 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, openhab_get
-from libs.constants.sma import SMA_MODBUS_BRIDGE_UID, CHANNELS_TO_USE
+from libs.constants.sma_inverter import SMA_MODBUS_BRIDGE_UID, CHANNELS_TO_USE
 from libs.constants.files import FILE_CONFIG_SMA_METADATA
 import json
 from libs.model.sma_tripower import InverterMetadata
