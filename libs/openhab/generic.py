@@ -6,7 +6,9 @@ import time
 import urllib.parse
 import sys
 
-SLEEP_TIME_SECONDS = 1
+SLEEP_TIME_SECONDS_WRITE = 2
+SLEEP_TIME_SECONDS_READ = 0
+SLEEP_TIME_SECONDS_DELETE = 2
 
 config = dotenv_values(FILE_CONFIG_SECRETS)
 ip = config["OPENHAB_IP"]
@@ -17,7 +19,7 @@ token = config["OPENHAB_TOKEN"]
 
 def openhab_post(type: str, data):
     # Add a delay for not getting into any throteling issues
-    time.sleep(SLEEP_TIME_SECONDS)
+    time.sleep(SLEEP_TIME_SECONDS_WRITE)
 
     base_url = f"http://{ip}:8080/rest"
     headers = {
@@ -50,7 +52,7 @@ def openhab_post(type: str, data):
 
 def openhab_put(type: str, id: str, data: dict):
     # Add a delay for not getting into any throteling issues
-    time.sleep(SLEEP_TIME_SECONDS)
+    time.sleep(SLEEP_TIME_SECONDS_WRITE)
 
     base_url = f"http://{ip}:8080/rest"
     headers = {
@@ -88,7 +90,7 @@ def openhab_put(type: str, id: str, data: dict):
 
 def openhab_delete(type: str, uid: str):
     # Add a delay for not getting into any throteling issues
-    time.sleep(SLEEP_TIME_SECONDS)
+    time.sleep(SLEEP_TIME_SECONDS_DELETE)
 
     base_url = f"http://{ip}:8080/rest"
     headers = {
@@ -119,7 +121,7 @@ def openhab_delete(type: str, uid: str):
 
 def openhab_get(type: str):
     # Add a delay for not getting into any throteling issues
-    # time.sleep(SLEEP_TIME_SECONDS)
+    time.sleep(SLEEP_TIME_SECONDS_READ)
 
     base_url = f"http://{ip}:8080/rest"
     # auth = HTTPBasicAuth(username=user, password=password)

@@ -10,10 +10,6 @@ config = dotenv_values(FILE_CONFIG_SECRETS)
 
 
 def get_sma_things():
-    # read file with SMA things
-    # with open(FILE_CONFIG_OPENHAB_SMA_THINGS, "r") as f:
-    #     data = json.load(f)
-    #     return data
     result = []
     data = None
     with open(FILE_CONFIG_SMA_METADATA, "r") as f:
