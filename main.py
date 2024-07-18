@@ -1,6 +1,6 @@
 from libs.devices.sma.things import get_sma_things
 from libs.model.sma_tripower import InverterMetadata
-from libs.devices.sma.things import add_sma_channel, delete_sma_channel
+from libs.devices.sma.things import add_sma_channel
 
 # Read-in the SMA metadata
 uids = []
@@ -19,7 +19,7 @@ for thing in get_sma_things():
             valueType=this.valueType,
         )
 
-delete_sma_channel(uids=uids)
+# delete_sma_channel(uids=uids)
 
 # data = build_modbus_data("modbus:poller:fd8a48df440c", "TEMP", "30775", "int32")
 # data_response = openhab_post(type="thing", data=data)

@@ -1,5 +1,5 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put
-from libs.constants.sma import SMA_MODBUS_BRIDGE_UID
+from libs.constants.sma import SMA_MODBUS_BRIDGE_UID, CHANNELS_TO_USE
 from libs.constants.files import FILE_CONFIG_SMA_METADATA
 import json
 
@@ -9,9 +9,16 @@ def get_sma_things():
     # with open(FILE_CONFIG_OPENHAB_SMA_THINGS, "r") as f:
     #     data = json.load(f)
     #     return data
+    result = []
+    data = None
     with open(FILE_CONFIG_SMA_METADATA, "r") as f:
         data = json.load(f)
-        return data
+
+    for thing in data:
+        if thing["SMA Modbus Registeradresse"] in CHANNELS_TO_USE:
+            result.append(thing)
+
+    return result
 
 
 # Build the poller json payload
@@ -66,7 +73,9 @@ def build_modbus_data(bridgeUID: str, label: str, start: int, valueType: str) ->
 
 # Build the item json payload
 def build_modbus_item(label: str, channelID: str) -> dict:
-    item_name = f"Item SMA {label} {channelID}_Value_as_Number".replace(" ", "_")
+    item_name = f"Item SMA {label} {channelID}_Value_as_Number".replace(
+        " ", "_"
+    ).replace("-", "_")
     item_label = f"Item SMA {label} ({channelID})"
 
     data = {

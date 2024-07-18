@@ -7,7 +7,7 @@ import time
 import urllib.parse
 import sys
 
-SLEEP_TIME_SECONDS = 3
+SLEEP_TIME_SECONDS = 0
 
 config = dotenv_values(FILE_CONFIG_OPENHAB)
 ip = config["OPENHAB_IP"]
