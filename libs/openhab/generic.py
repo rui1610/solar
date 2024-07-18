@@ -1,5 +1,4 @@
 import requests
-from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
 from libs.constants.files import FILE_CONFIG_SECRETS
 import json
@@ -7,7 +6,7 @@ import time
 import urllib.parse
 import sys
 
-SLEEP_TIME_SECONDS = 0
+SLEEP_TIME_SECONDS = 2
 
 config = dotenv_values(FILE_CONFIG_SECRETS)
 ip = config["OPENHAB_IP"]
@@ -89,10 +88,9 @@ def openhab_put(type: str, id: str, data: dict):
 
 def openhab_delete(type: str, uid: str):
     # Add a delay for not getting into any throteling issues
-    time.sleep(SLEEP_TIME_SECONDS)
+    # time.sleep(SLEEP_TIME_SECONDS)
 
     base_url = f"http://{ip}:8080/rest"
-    auth = HTTPBasicAuth(username=user, password=password)
     headers = {
         "Content-type": "application/json",
         "Accept": "application/json",
@@ -102,35 +100,38 @@ def openhab_delete(type: str, uid: str):
     url = f"{base_url}/{type}s/{uid}"
 
     try:
-        response = requests.delete(url, auth=auth, headers=headers, timeout=8)
+        response = requests.delete(url, headers=headers, timeout=8)
         response.raise_for_status()
         return response
     except requests.exceptions.HTTPError as errh:
         print(errh)
-        sys.exit(1)
+        # sys.exit(1)
     except requests.exceptions.ConnectionError as errc:
         print(errc)
-        sys.exit(1)
+        # sys.exit(1)
     except requests.exceptions.Timeout as errt:
         print(errt)
-        sys.exit(1)
+        # sys.exit(1)
     except requests.exceptions.RequestException as err:
         print(err)
-        sys.exit(1)
+        # sys.exit(1)
 
 
 def openhab_get(type: str):
     # Add a delay for not getting into any throteling issues
-    time.sleep(SLEEP_TIME_SECONDS)
+    # time.sleep(SLEEP_TIME_SECONDS)
 
     base_url = f"http://{ip}:8080/rest"
-    auth = HTTPBasicAuth(username=user, password=password)
-    headers = {"Content-type": "application/json", "Accept": "application/json"}
-
+    # auth = HTTPBasicAuth(username=user, password=password)
+    headers = {
+        "Content-type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer %s" % token,
+    }
     url = f"{base_url}/{type}s"
 
     try:
-        response = requests.get(url, auth=auth, headers=headers, timeout=8)
+        response = requests.get(url, headers=headers, timeout=8)
         response.raise_for_status()
         return response
     except requests.exceptions.HTTPError as errh:
@@ -153,16 +154,17 @@ def delete_all_objects():
 
     for objectType in objectTypes:
         response = openhab_get(objectType)
-        myObjects = response.json()
+        if response is not None:
+            myObjects = response.json()
 
-        for myObject in myObjects:
-            try:
-                match myObject:
-                    case "thing":
-                        openhab_delete(uid=myObject["UID"], type=objectType)
-                    case "link":
-                        openhab_delete(uid=myObject["UID"], type=objectType)
-                    case "item":
-                        openhab_delete(uid=myObject["label"], type=objectType)
-            except Exception as e:
-                print(e)
+            for myObject in myObjects:
+                try:
+                    match objectType:
+                        case "thing":
+                            openhab_delete(uid=myObject["UID"], type=objectType)
+                        case "link":
+                            openhab_delete(uid=myObject["itemName"], type=objectType)
+                        case "item":
+                            openhab_delete(uid=myObject["name"], type=objectType)
+                except Exception as e:
+                    print(e)

@@ -1,5 +1,3 @@
-SMA_MODBUS_BRIDGE_UID = "modbus:tcp:30413f8c13"
-
 CHANNELS_TO_USE = [
     30847,
     30845,

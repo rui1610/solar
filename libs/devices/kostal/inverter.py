@@ -48,10 +48,11 @@ def add_kostal_inverter_thing(name: str = "KOSTAL PIKO 4.2") -> dict:
 def exists_kostal_thing():
     result = False
     response = openhab_get("thing")
-    response_json = response.json()
+    if response is not None:
+        response_json = response.json()
 
-    for thing in response_json:
-        if thing["thingTypeUID"] == "kostalinverter:piko1020":
-            return thing
+        for thing in response_json:
+            if thing["thingTypeUID"] == "kostalinverter:piko1020":
+                return thing
 
     return result
