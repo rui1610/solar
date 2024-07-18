@@ -1,7 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
-from libs.constants.files import FILE_CONFIG_OPENHAB
+from libs.constants.files import FILE_CONFIG_SECRETS
 import json
 import time
 import urllib.parse
@@ -9,7 +9,7 @@ import sys
 
 SLEEP_TIME_SECONDS = 0
 
-config = dotenv_values(FILE_CONFIG_OPENHAB)
+config = dotenv_values(FILE_CONFIG_SECRETS)
 ip = config["OPENHAB_IP"]
 user = config["OPENHAB_USER"]
 password = config["OPENHAB_PASSWORD"]

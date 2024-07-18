@@ -1,7 +1,8 @@
-from libs.openhab.generic import openhab_post, openhab_delete, openhab_put
+from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, openhab_get
 from libs.constants.sma import SMA_MODBUS_BRIDGE_UID, CHANNELS_TO_USE
 from libs.constants.files import FILE_CONFIG_SMA_METADATA
 import json
+from libs.model.sma_tripower import InverterMetadata
 
 
 def get_sma_things():
@@ -15,7 +16,12 @@ def get_sma_things():
         data = json.load(f)
 
     for thing in data:
-        if thing["SMA Modbus Registeradresse"] in CHANNELS_TO_USE:
+        if (
+            thing["SMA Modbus Registeradresse"] in CHANNELS_TO_USE
+            and thing["Objekttyp"]
+            and thing["SMA Modbus Datentyp"]
+            in ["U32", "S32", "U64", "S64", "U16", "S16"]
+        ):
             result.append(thing)
 
     return result
@@ -246,3 +252,42 @@ def delete_sma_channel(uids: str):
     # iterate over the UID and delete the things
     for uid in uids:
         response = openhab_delete(type="thing", uid=uid)
+
+
+# Returns False if not exists or the thing object if exists
+def exists_sma_inverter():
+    result = False
+    response = openhab_get("thing")
+    response_json = response.json()
+
+    for thing in response_json:
+        if thing["thingTypeUID"] == "modbus:tcp":
+            return thing
+
+    return result
+
+
+# Add the SMA thing
+def add_sma_inverter_thing(name: str = "SMA Modbus Bridge") -> dict:
+    exists = exists_sma_inverter()
+    uids = []
+
+    if exists is False:
+        # Build the SMA Modbus Bridge thing
+        # data = build_kostal_thing(name)
+        # Create the data thing
+        # data_response = openhab_post(type="thing", data=data)
+        # result = data_response.json()
+
+        for thing in get_sma_things():
+            # convert the thing to a SMA Tripower metadata object
+            this = InverterMetadata(thing)
+            # Add the SMA channel
+            uids = add_sma_channel(
+                uids=uids,
+                label=this.label,
+                channelID=this.channelID,
+                valueType=this.valueType,
+            )
+
+    return uids
