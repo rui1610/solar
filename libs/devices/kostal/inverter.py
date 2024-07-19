@@ -13,6 +13,7 @@ def build_kostal_thing(name: str) -> dict:
     ip = config["KOSTAL_PICO_IP"]
     user = config["KOSTAL_PICO_USER"]
     password = config["KOSTAL_PICO_PASSWORD"]
+    location = config["KOSTAL_PICO_LOCATION"]
 
     data = {
         "UID": f"kostalinverter:piko1020:{myuuid}",
@@ -25,6 +26,7 @@ def build_kostal_thing(name: str) -> dict:
         "channels": [],
         "thingTypeUID": "kostalinverter:piko1020",
         "ID": myuuid,
+        "location": location,
     }
 
     return data

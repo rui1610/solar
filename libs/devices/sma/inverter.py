@@ -2,6 +2,7 @@ from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, open
 from libs.constants.files import FILE_CONFIG_SMA_METADATA, FILE_CONFIG_SECRETS
 import json
 import os
+
 from libs.model.sma_tripower import InverterMetadata
 from dotenv import dotenv_values
 
@@ -102,28 +103,8 @@ def build_modbus_item_link(channelUID: str, itemName: str) -> dict:
 
 
 # Add the SMA poller
-def add_sma_poller(label: str, channelID: str, valueType: str, bridgeUID: str) -> dict:
+def add_sma_poller(label: str, channelID: str, length: int, bridgeUID: str) -> dict:
     # set the default length
-    length = 2
-
-    # set the length based on the valueType
-    match valueType:
-        case "int32":
-            length = 2
-        case "int64":
-            length = 4
-        case "STR32":
-            length = 32
-        case "U32":
-            length = 2
-        case "U64":
-            length = 4
-        case "S32":
-            length = 2
-        case "U16":
-            length = 1
-        case "S16":
-            length = 1
 
     # Build the poller thing
     poller = build_modbus_poller(
@@ -196,20 +177,23 @@ def add_sma_data(
 
 # Add the SMA channel
 def add_sma_channel(
-    uids: list, label: str, channelID: str, valueType: str, bridgeUID: str
+    uids: list, inverterMetadata: InverterMetadata, bridgeUID: str
 ) -> dict:
     # Create the poller thing
     response_poller = add_sma_poller(
-        label=label, channelID=channelID, valueType=valueType, bridgeUID=bridgeUID
+        label=inverterMetadata.label,
+        channelID=inverterMetadata.channel,
+        length=inverterMetadata.length,
+        bridgeUID=bridgeUID,
     )
     poller_bridgeUID = response_poller["UID"]
     uids.append(poller_bridgeUID)
 
     # Create the data thing
     response_data = add_sma_data(
-        label=label,
-        channelID=channelID,
-        valueType=valueType,
+        label=inverterMetadata.label,
+        channelID=inverterMetadata.channel,
+        valueType=inverterMetadata.valueType,
         poller_bridgeUID=poller_bridgeUID,
     )
 
@@ -255,6 +239,7 @@ def build_sma_modbus_bridge(name: str = "SMA Modbus bridge"):
     ip = config["SMA_INVERTER_IP"]
     port = config["SMA_INVERTER_PORT"]
     id = config["SMA_INVERTER_ID"]
+    location = config["SMA_INVERTER_LOCATION"]
 
     data = {
         "UID": f"modbus:modbus:{myuuid}",
@@ -263,6 +248,7 @@ def build_sma_modbus_bridge(name: str = "SMA Modbus bridge"):
         "channels": [],
         "thingTypeUID": "modbus:tcp",
         "ID": myuuid,
+        "location": location,
     }
 
     return data
@@ -296,11 +282,7 @@ def add_sma_inverter_thing(name: str = "SMA Modbus Bridge") -> dict:
             this = InverterMetadata(thing)
             # Add the SMA channel
             uids = add_sma_channel(
-                uids=uids,
-                label=this.label,
-                channelID=this.channelID,
-                valueType=this.valueType,
-                bridgeUID=sma_modbus_bridge["UID"],
+                uids=uids, inverterMetadata=this, bridgeUID=sma_modbus_bridge["UID"]
             )
 
     return uids

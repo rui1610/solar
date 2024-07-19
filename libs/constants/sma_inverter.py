@@ -1,5 +1,10 @@
 CHANNELS_TO_USE = [
-    {"channel": "30849", "device": "Batterie", "name": "Temperatur", "unit": "C"},
+    {
+        "channel": "30849",
+        "device": "Batterie",
+        "name": "Temperatur",
+        "unit": "C",
+    },
     {
         "channel": "30847",
         "device": "Batterie",
@@ -11,19 +16,19 @@ CHANNELS_TO_USE = [
     {"channel": "31397", "device": "Batterie", "name": "Ladung", "unit": "W"},
     {
         "channel": "30773",
-        "device": "Solar Panele",
+        "device": "Solar Panele Dach vorne",
         "name": "Leistung String 1",
         "unit": "W",
     },
     {
         "channel": "30961",
-        "device": "Solar Panele",
+        "device": "Solar Panele Dach vorne",
         "name": "Leistung String 2",
         "unit": "W",
     },
     {
         "channel": "30529",
-        "device": "Solar Panele",
+        "device": "Solar Panele Dach vorne",
         "name": "Ertrag gesamt",
         "unit": "W",
     },
@@ -35,7 +40,7 @@ CHANNELS_TO_USE = [
     },
     {
         "channel": "30775",
-        "device": "Solar Panele",
+        "device": "Solar Panele Dach vorne",
         "name": "Leistung aktuell",
         "unit": "W",
     },
@@ -65,7 +70,7 @@ CHANNELS_TO_USE = [
     },
     {
         "channel": "30535",
-        "device": "Solar Panele",
+        "device": "Solar Panele Dach vorne",
         "name": "Erzeugung heute",
         "unit": "W",
     },
