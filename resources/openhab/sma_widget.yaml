@@ -1,0 +1,508 @@
+uid: SMA_widget5
+tags: []
+props:
+  parameters:
+    - context: item
+      label: Power Import
+      name: power_import
+      required: true
+      type: TEXT
+    - context: item
+      label: Power Export
+      name: power_export
+      required: true
+      type: TEXT
+    - context: item
+      label: Total Power Consumption
+      name: totalconsumption
+      required: true
+      type: TEXT
+    - context: item
+      label: PV Production
+      name: pv_production
+      required: true
+      type: TEXT
+    - context: item
+      label: Export Today
+      name: export_today
+      required: true
+      type: TEXT
+    - context: item
+      label: Import Today
+      name: import_today
+      required: true
+      type: TEXT
+    - context: item
+      label: PV Production Total
+      name: pv_productiontotal
+      required: true
+      type: TEXT
+    - context: item
+      label: PV Production Today
+      name: pv_productionday
+      required: true
+      type: TEXT
+    - context: item
+      label: Battery Power
+      name: batterypower
+      required: true
+      type: TEXT
+    - context: item
+      label: Battery Level
+      name: batterylevel
+      required: true
+      type: TEXT
+    - default: 5000
+      label: Animation Speed
+      name: animationspeed
+      required: true
+      type: TEXT
+  parameterGroups: []
+timestamp: Dec 18, 2023, 8:26:23 PM
+component: f7-card
+config:
+  class:
+    - display-flex
+    - flex-direction-column
+    - align-items-center
+  style:
+    height: 365px
+slots:
+  content:
+    - component: f7-block
+      config:
+        style:
+          --f7-theme-color: var(--f7-text-color)
+          display: flex
+          justify-content: space-between
+          padding: 0
+      slots:
+        default:
+          - component: f7-col
+            config:
+              style:
+                align-items: center
+                display: flex
+                flex-direction: row
+                text-align: left
+            slots:
+              default:
+                - component: f7-block
+                  config:
+                    style:
+                      align-items: left
+                      display: flex
+                      flex-direction: column
+                      height: 140px
+                      justify-content: left
+                      margin-right: -10px
+                      width: 140px
+                      text-align: left
+                      top: -25px
+                  slots:
+                    default:
+                      - component: Label
+                        config:
+                          style:
+                            color: red
+                            font-size: 25px
+                            font-weight: bold
+                            margin-top: -10px
+                            text-align: center
+                            width: 110px
+                          text: =Math.abs(Number.parseFloat(items[props.power_import].state.split(" ")[0])).toFixed(0) + ' ᵂ'
+                          visible: '= Number.parseFloat(items[props.power_import].state.split(" ")[0]) > 0 ? true : false'
+                      - component: Label
+                        config:
+                          style:
+                            color: green
+                            font-size: 25px
+                            font-weight: bold
+                            margin-top: -10px
+                            text-align: center
+                            width: 110px
+                          text: = '-' + Math.abs(Number.parseFloat(items[props.power_import].state.split(" ")[0])).toFixed(0) + ' ᵂ'
+                          visible: '= Number.parseFloat(items[props.power_import].state.split(" ")[0]) <= 0 ? true : false'
+                      - component: oh-icon
+                        config:
+                          height: 110px
+                          icon: sma_grid_2
+                          width: 110px
+                      - component: oh-link
+                        config:
+                          iconColor: green
+                          iconF7: arrow_turn_up_left
+                          iconSize: 20px
+                          style:
+                            font-size: 15px
+                            font-weight: bold
+                            left: 0px
+                            margin-top: -10px
+                            align: left
+                            top: 0px
+                            white-space: nowrap
+                          text: =Math.abs(Number.parseFloat(items[props.export_today].state.split(" ")[0])).toFixed(0) + ' kWh'
+                          visible: "true"
+                      - component: oh-link
+                        config:
+                          iconColor: red
+                          iconF7: arrow_turn_down_right
+                          iconSize: 20px
+                          style:
+                            font-size: 15px
+                            font-weight: bold
+                            align: left
+                            left: 0px
+                            top: 0px
+                            white-space: nowrap
+                          text: =Math.abs(Number.parseFloat(items[props.import_today].state.split(" ")[0])).toFixed(0) + ' kWh'
+                          visible: "true"
+          - component: f7-col
+            config:
+              style:
+                align-items: center
+                display: flex
+                flex-direction: column
+                flex-grow: 1
+            slots:
+              default:
+                - component: f7-block
+                  config:
+                    style:
+                      align-items: center
+                      display: flex
+                      flex-direction: column
+                      height: 110px
+                      justify-content: center
+                      margin-top: 0
+                      width: 110px
+                  slots:
+                    default:
+                      - component: Label
+                        config:
+                          style:
+                            color: green
+                            font-size: 25px
+                            font-weight: bold
+                            text-align: center
+                            width: 100px
+                          text: =Math.abs(Number.parseFloat(items[props.pv_production].state.split(" ")[0])).toFixed(0) + ' ᵂ'
+                      - component: oh-icon
+                        config:
+                          height: 110px
+                          icon: sma_pv_2
+                          style:
+                            margin-top: -20px
+                - component: f7-block
+                  config:
+                    style:
+                      display: flex
+                      justify-content: center
+                      margin: 0
+                      padding: 0
+                      width: 100%
+                  slots:
+                    default:
+                      - component: f7-row
+                        config:
+                          preserveAspectRatio: xMidYMid slice
+                          style:
+                            height: 100px
+                            width: 100px
+                          tag: svg
+                          viewBox: 0 0 100 100
+                          xmlns: http://www.w3.org/2000/svg
+                        slots:
+                          default:
+                            - component: f7-row
+                              config:
+                                d: M60 -5 v10 c0 30 10 35 30 35 h20
+                                fill: none
+                                id: path1
+                                stroke: rgba(100, 150, 200, 0.8)
+                                stroke-width: 2
+                                tag: path
+                                vector-effect: non-scaling-stroke
+                                visible: "false"
+                            - component: f7-row
+                              config:
+                                fill: rgba(100, 150, 200, 0.8)
+                                r: 6
+                                style:
+                                  stroke-width: 4
+                                tag: circle
+                                vector-effect: non-scaling-stroke
+                                visible: "false"
+                              slots:
+                                default:
+                                  - component: f7-row
+                                    config:
+                                      calcMode: linear
+                                      dur: 4s
+                                      repeatCount: indefinite
+                                      tag: animateMotion
+                                    slots:
+                                      default:
+                                        - component: f7-row
+                                          config:
+                                            tag: mpath
+                                            xlink:href: "#path1"
+                            - component: f7-row
+                              config:
+                                d: M40 -5 v10 c0 40 -10 35 -30 35 h-20
+                                fill: none
+                                id: path2
+                                stroke: rgba(100, 150, 200, 0.8)
+                                stroke-width: 2
+                                tag: path
+                                vector-effect: non-scaling-stroke
+                                visible: '= Number.parseFloat(items[props.power_import].state.split(" ")[0]) < 0  ? true : false'
+                            - component: f7-row
+                              config:
+                                fill: rgba(100, 150, 200, 0.8)
+                                r: 6
+                                strokeWidth: 10
+                                tag: circle
+                                vectorEffect: non-scaling-stroke
+                                visible: '= Number.parseFloat(items[props.power_import].state.split(" ")[0]) < 0  ? true : false'
+                              slots:
+                                default:
+                                  - component: f7-row
+                                    config:
+                                      calcMode: linear
+                                      dur: '=(Number.parseFloat(items[props.power_import].state.split(" ")[0]) > 0 ? props.animationspeed / Number.parseFloat(items[props.power_import].state.split(" ")[0])  : 0)+"s"'
+                                      repeatCount: indefinite
+                                      tag: animateMotion
+                                    slots:
+                                      default:
+                                        - component: f7-row
+                                          config:
+                                            tag: mpath
+                                            xlink:href: "#path2"
+                            - component: f7-row
+                              config:
+                                d: M50, 0 v100
+                                fill: none
+                                id: path3
+                                stroke: rgba(100, 150, 200, 0.8)
+                                stroke-width: 2
+                                tag: path
+                                vector-effect: non-scaling-stroke
+                                visible: '=Number.parseFloat(items[props.pv_production].state.split(" ")[0])  > 0 ? true : false'
+                            - component: f7-row
+                              config:
+                                fill: rgba(100, 150, 200, 0.8)
+                                r: 6
+                                strokeWidth: 10
+                                tag: circle
+                                vectorEffect: non-scaling-stroke
+                                visible: '=Number.parseFloat(items[props.pv_production].state.split(" ")[0]) > 0 ? true : false'
+                              slots:
+                                default:
+                                  - component: f7-row
+                                    config:
+                                      calcMode: linear
+                                      dur: '=(Number.parseFloat(items[props.pv_production].state.split(" ")[0]) > 0 ? props.animationspeed / Number.parseFloat(items[props.pv_production].state.split(" ")[0])  : 0)+"s"'
+                                      repeatCount: indefinite
+                                      tag: animateMotion
+                                    slots:
+                                      default:
+                                        - component: f7-row
+                                          config:
+                                            tag: mpath
+                                            xlink:href: "#path3"
+                            - component: f7-row
+                              config:
+                                d: M-5 50 l10 0 c40 0 35 10 35 50 l 0 20
+                                fill: none
+                                id: path4
+                                stroke: rgba(100, 150, 200, 0.8)
+                                stroke-width: 2
+                                tag: path
+                                vector-effect: non-scaling-stroke
+                                visible: '= Number.parseFloat(items[props.power_import].state.split(" ")[0]) > 0 ? true : false'
+                            - component: f7-row
+                              config:
+                                fill: rgba(100, 150, 200, 0.8)
+                                r: 6
+                                strokeWidth: 10
+                                tag: circle
+                                vectorEffect: non-scaling-stroke
+                                visible: '= Number.parseFloat(items[props.power_import].state.split(" ")[0]) > 0 ? true : false'
+                              slots:
+                                default:
+                                  - component: f7-row
+                                    config:
+                                      calcMode: linear
+                                      dur: '=(Number.parseFloat(items[props.power_import].state.split(" ")[0]) > 0 ? props.animationspeed / Number.parseFloat(items[props.power_import].state.split(" ")[0])  : 0)+"s"'
+                                      repeatCount: indefinite
+                                      tag: animateMotion
+                                    slots:
+                                      default:
+                                        - component: f7-row
+                                          config:
+                                            tag: mpath
+                                            xlink:href: "#path4"
+                            - component: f7-row
+                              config:
+                                d: M 105 50 l -10 0 c -40 0 -35 10 -35 50 l 0 20
+                                fill: none
+                                id: path5
+                                stroke: rgba(100, 150, 200, 0.8)
+                                stroke-width: 2
+                                tag: path
+                                vector-effect: non-scaling-stroke
+                                visible: '=(Number.parseFloat(items[props.batterypower].state.split(" ")[0]) > 0) ? true : false'
+                            - component: f7-row
+                              config:
+                                fill: rgba(100, 150, 200, 0.8)
+                                r: 6
+                                strokeWidth: 10
+                                tag: circle
+                                vectorEffect: non-scaling-stroke
+                                visible: '=(Number.parseFloat(items[props.batterypower].state.split(" ")[0]) > 0) ? true : false'
+                              slots:
+                                default:
+                                  - component: f7-row
+                                    config:
+                                      calcMode: linear
+                                      dur: '=(Number.parseFloat(items[props.batterypower].state.split(" ")[0]) > 0 ? props.animationspeed / Number.parseFloat(items[props.batterypower].state.split(" ")[0])  : 0)+"s"'
+                                      repeatCount: indefinite
+                                      tag: animateMotion
+                                    slots:
+                                      default:
+                                        - component: f7-row
+                                          config:
+                                            tag: mpath
+                                            xlink:href: "#path5"
+                - component: f7-block
+                  config:
+                    style:
+                      align-items: center
+                      display: flex
+                      flex-direction: column
+                      height: 110px
+                      justify-content: center
+                      margin-top: -10px
+                      width: 110px
+                  slots:
+                    default:
+                      - component: oh-icon
+                        config:
+                          color: orange
+                          height: 110px
+                          icon: sma_consumption_2
+                      - component: Label
+                        config:
+                          style:
+                            font-size: 25px
+                            font-weight: bold
+                            margin-top: -10px
+                            text-align: center
+                            width: 100px
+                          text: =Math.abs(Number.parseFloat(items[props.totalconsumption].state.split(" ")[0])).toFixed(0) + ' ᵂ'
+          - component: f7-col
+            config:
+              style:
+                align-items: center
+                display: flex
+                flex-direction: row
+            slots:
+              default:
+                - component: f7-block
+                  config:
+                    style:
+                      align-items: left
+                      display: flex
+                      flex-direction: column
+                      height: 110px
+                      justify-content: center
+                      margin-top: -100px
+                      width: 110px
+                  slots:
+                    default:
+                      - component: oh-link
+                        config:
+                          iconAlign: left
+                          iconColor: black
+                          iconF7: sum
+                          iconSize: 15px
+                          style:
+                            font-size: 15px
+                            font-weight: bold
+                            left: 0px
+                            margin-left: -200px
+                            position: absolute
+                            text-align: right
+                            top: -20px
+                            white-space: nowrap
+                          text: =Math.abs(Number.parseFloat(items[props.pv_productiontotal].state.split(" ")[0])).toFixed(0) + ' kWh'
+                          visible: "true"
+                      - component: oh-link
+                        config:
+                          iconAlign: left
+                          iconColor: black
+                          iconF7: calendar_today
+                          iconSize: 15px
+                          style:
+                            font-size: 15px
+                            font-weight: bold
+                            left: 0px
+                            margin-left: -200px
+                            position: absolute
+                            text-align: right
+                            top: -40px
+                            white-space: nowrap
+                          text: =Math.abs(Number.parseFloat(items[props.pv_productionday].state.split(" ")[0])).toFixed(0) + ' kWh'
+                          visible: "true"
+                      - component: oh-link
+                        config:
+                          iconColor: red
+                          iconF7: battery_0
+                          iconSize: 33px
+                          style:
+                            font-size: 25px
+                            font-weight: bold
+                            white-space: nowrap
+                          text: =items[props.batterylevel].state
+                          visible: '=(Number.parseFloat(items[props.batterylevel].state.split(" ")[0]) < 10) ? true : false'
+                      - component: oh-link
+                        config:
+                          iconColor: orange
+                          iconF7: battery_25
+                          iconSize: 33px
+                          style:
+                            font-size: 25px
+                            font-weight: bold
+                            white-space: nowrap
+                          text: =items[props.batterylevel].state
+                          visible: '=(Number.parseFloat(items[props.batterylevel].state.split(" ")[0]) >= 10 && Number.parseFloat(items[props.batterylevel].state.split(" ")[0]) < 75) ? true : false'
+                      - component: oh-link
+                        config:
+                          iconColor: green
+                          iconF7: battery_100
+                          iconSize: 33px
+                          style:
+                            font-size: 25px
+                            font-weight: bold
+                            white-space: nowrap
+                          text: =items[props.batterylevel].state
+                          visible: '=(Number.parseFloat(items[props.batterylevel].state.split(" ")[0]) >= 75) ? true : false'
+                      - component: oh-icon
+                        config:
+                          height: 110px
+                          icon: sma_battery_2
+                          style:
+                            margin-top: -20px
+                      - component: Label
+                        config:
+                          style:
+                            color: '=(Number.parseFloat(items[props.batterypower].state.split(" ")[0]) > 0) ? "red" : "green"'
+                            font-size: 25px
+                            font-weight: bold
+                            margin-top: -10px
+                            text-align: center
+                            white-space: nowrap
+                            width: 100px
+                          text: =Math.abs(Number.parseFloat(items[props.batterypower].state.split(" ")[0])) + ' ᵂ'
+                          visible: '=(Number.parseFloat(items[props.batterypower].state.split(" ")[0]) !== 0) ? true : false'

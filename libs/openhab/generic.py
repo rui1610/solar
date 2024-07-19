@@ -6,9 +6,9 @@ import time
 import urllib.parse
 import sys
 
-SLEEP_TIME_SECONDS_WRITE = 2
+SLEEP_TIME_SECONDS_WRITE = 1
 SLEEP_TIME_SECONDS_READ = 0
-SLEEP_TIME_SECONDS_DELETE = 2
+SLEEP_TIME_SECONDS_DELETE = 1
 
 config = dotenv_values(FILE_CONFIG_SECRETS)
 ip = config["OPENHAB_IP"]

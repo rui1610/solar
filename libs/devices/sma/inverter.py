@@ -1,6 +1,5 @@
 from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, openhab_get
 from libs.constants.files import FILE_CONFIG_SMA_METADATA, FILE_CONFIG_SECRETS
-from libs.constants.sma_inverter import CHANNELS_TO_USE
 import json
 import os
 from libs.model.sma_tripower import InverterMetadata
@@ -16,9 +15,8 @@ def get_sma_things():
         data = json.load(f)
 
     for thing in data:
-        if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
-            "SMA Modbus Datentyp"
-        ] in ["U32", "S32", "U64", "S64", "U16", "S16"]:
+        # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
+        if thing["SMA Modbus Datentyp"] in ["U32", "S32", "U64", "S64", "U16", "S16"]:
             result.append(thing)
 
     return result

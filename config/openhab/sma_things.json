@@ -2484,7 +2484,7 @@
     {
         "Kanal": "Operation.GriSwStt",
         "Objekttyp": "Messwert",
-        "Name (SMA Speedwire)": "Netzrelais/-schuetz",
+        "Name (SMA Speedwire)": "Netzrelais und -schuetz",
         "Lese-Level": "",
         "Gruppe": "Status > Betrieb > Status des Netzrelais",
         "Wertebereich / Einheit / Einstellwerte": "51: Geschlossen (Cls)311: Offen (Opn)16777213: Information liegt nicht vor (NaNStt)",
