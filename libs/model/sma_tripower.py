@@ -20,7 +20,8 @@ class InverterMetadata:
     device: str
     name: str
     unit: str
-    valueFactor: float = 1
+    valueFactor: float
+    location: str
 
     def __str__(self):
         return f"{self.label} ({self.channel})"
@@ -34,23 +35,32 @@ class InverterMetadata:
     def __init__(self, raw_data):
         channelID = int(raw_data["SMA Modbus Registeradresse"])
 
-        this_item, self.label = getItemAndLabelName(channelID)
-        self.channel = this_item.channel
-        self.device = this_item.device
-        self.name = this_item.name
-        self.unit = this_item.unit
-        self.length, self.valueType = getValueType(raw_data["SMA Modbus Datentyp"])
-        self.objectType = raw_data["Objekttyp"]
-        self.valueFactor = getFactor(raw_data["Schrittweite"])
+        this_item, label = getItemAndLabelName(channelID)
+        if this_item is not None:
+            self.label = label
+            self.channel = this_item.channel
+            self.device = this_item.device
+            self.name = this_item.name
+            self.unit = this_item.unit
+            self.length, self.valueType = getValueType(raw_data["SMA Modbus Datentyp"])
+            self.objectType = raw_data["Objekttyp"]
+            self.valueFactor = getFactor(raw_data["Schrittweite"])
+        else:
+            self.channel = None
 
 
 def getItemAndLabelName(channelId: str):
     for item in CHANNELS_TO_USE:
         # Map the item to the dataclass
         thisItem = SmaChannelToUse(**item)
-        if thisItem.channel == channelId:
+
+        if int(thisItem.channel) == channelId:
             label = f"{thisItem.device} - {thisItem.name} ({channelId})"
             return thisItem, label
+
+        # if thisItem.channel == channelId:
+        #     label = f"{thisItem.device} - {thisItem.name} ({channelId})"
+        #     return thisItem, label
 
     return None, None
 

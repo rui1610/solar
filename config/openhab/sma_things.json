@@ -1,5 +1,22 @@
 [
     {
+        "Kanal": "Bat.TmpVal",
+        "Objekttyp": "Messwert",
+        "Name (SMA Speedwire)": "Batterietemperatur",
+        "Lese-Level": "",
+        "Gruppe": "Batterie > Batterie > Temperatur",
+        "Wertebereich / Einheit / Einstellwerte": "-",
+        "Default-Wert": "-",
+        "Schrittweite": "0,1",
+        "Schreib-Level": "-",
+        "Grid Guard": "-",
+        "SMA Modbus Registeradresse": "30849",
+        "Anzahl zusammenh\u00e4ngender SMA Modbus Register": "2",
+        "SMA Modbus Datentyp": "S32",
+        "SMA Modbus Datenformat": "TEMP",
+        "SMA Modbus Zugriff": "RO"
+    },
+    {
         "Kanal": "Operation.EvtCntUsr",
         "Objekttyp": "Messwert",
         "Name (SMA Speedwire)": "Anzahl Ereignisse fuer Benutzer",
@@ -1442,23 +1459,6 @@
         "Anzahl zusammenh\u00e4ngender SMA Modbus Register": "2",
         "SMA Modbus Datentyp": "U32",
         "SMA Modbus Datenformat": "FIX0",
-        "SMA Modbus Zugriff": "RO"
-    },
-    {
-        "Kanal": "Bat.TmpVal",
-        "Objekttyp": "Messwert",
-        "Name (SMA Speedwire)": "Batterietemperatur",
-        "Lese-Level": "",
-        "Gruppe": "Batterie > Batterie > Temperatur",
-        "Wertebereich / Einheit / Einstellwerte": "-",
-        "Default-Wert": "-",
-        "Schrittweite": "0,1",
-        "Schreib-Level": "-",
-        "Grid Guard": "-",
-        "SMA Modbus Registeradresse": "30849",
-        "Anzahl zusammenh\u00e4ngender SMA Modbus Register": "2",
-        "SMA Modbus Datentyp": "S32",
-        "SMA Modbus Datenformat": "TEMP",
         "SMA Modbus Zugriff": "RO"
     },
     {

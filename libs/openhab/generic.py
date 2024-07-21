@@ -6,9 +6,9 @@ import time
 import urllib.parse
 import sys
 
-SLEEP_TIME_SECONDS_WRITE = 1
+SLEEP_TIME_SECONDS_WRITE = 2
 SLEEP_TIME_SECONDS_READ = 0
-SLEEP_TIME_SECONDS_DELETE = 1
+SLEEP_TIME_SECONDS_DELETE = 2
 
 config = dotenv_values(FILE_CONFIG_SECRETS)
 ip = config["OPENHAB_IP"]
@@ -117,6 +117,10 @@ def openhab_delete(type: str, uid: str):
     except requests.exceptions.RequestException as err:
         print(err)
         # sys.exit(1)
+
+    while response.status_code != 200:
+        response = requests.delete(url, headers=headers, timeout=8)
+        response.raise_for_status()
 
 
 def openhab_get(type: str):
