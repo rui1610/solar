@@ -178,28 +178,60 @@ def add_sma_data(inverter: InverterMetadata, poller_bridgeUID: str) -> dict:
     return response_data
 
 
+def modbus_data_exists(inverter: InverterMetadata):
+    response = openhab_get("thing")
+    response_json = response.json()
+    for thing in response_json:
+        if thing["label"] == f"Modbus {inverter.label} - data":
+            return True
+
+    return False
+
+
+def modbus_poller_exists(inverter: InverterMetadata):
+    response = openhab_get("thing")
+    response_json = response.json()
+    for thing in response_json:
+        if thing["label"] == f"Modbus {inverter.label} - poller":
+            return True
+
+    return False
+
+
+def modbus_item_exists(inverter: InverterMetadata):
+    response = openhab_get("item")
+    response_json = response.json()
+    for item in response_json:
+        if item["label"] == f"SMA {inverter.label}":
+            return True
+
+    return False
+
+
 # Add the SMA channel
 def add_sma_channel(uids: list, inverter: InverterMetadata, bridgeUID: str) -> dict:
-    # Create the poller thing
-    response_poller = add_sma_poller(inverter=inverter, bridgeUID=bridgeUID)
-    poller_bridgeUID = response_poller["UID"]
-    uids.append(poller_bridgeUID)
+    # Create the poller thing if not exists
+    if modbus_poller_exists(inverter=inverter) is False:
+        response_poller = add_sma_poller(inverter=inverter, bridgeUID=bridgeUID)
+        poller_bridgeUID = response_poller["UID"]
+        uids.append(poller_bridgeUID)
 
-    # Create the data thing
-    response_data = add_sma_data(
-        inverter=inverter,
-        poller_bridgeUID=poller_bridgeUID,
-    )
+    # Create the data thing if not exists
+    if modbus_data_exists(inverter=inverter) is False:
+        response_data = add_sma_data(
+            inverter=inverter,
+            poller_bridgeUID=poller_bridgeUID,
+        )
 
-    data_uid = response_data["UID"]
-    uids.append(data_uid)
+        data_uid = response_data["UID"]
+        uids.append(data_uid)
 
-    # Create the item
-    # label_item = f"{label}_Value_as_Number"
-    response_item = add_sma_item(inverter=inverter)
-    item_name = response_item["name"]
+    # Create the item if not exists
+    if modbus_item_exists(inverter=inverter) is False:
+        response_item = add_sma_item(inverter=inverter)
+        item_name = response_item["name"]
 
-    add_sma_item_link(dataID=data_uid, itemName=item_name, channelUID=data_uid)
+        add_sma_item_link(dataID=data_uid, itemName=item_name, channelUID=data_uid)
 
     # reverse the list of UIDs
     uids.reverse()

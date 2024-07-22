@@ -156,7 +156,8 @@ def openhab_get(type: str):
 
 def delete_all_objects():
     # Don't change the sequence of the objectTypes!
-    objectTypes = ["item", "link", "thing"]
+    # objectTypes = ["link", "item", "thing"]
+    objectTypes = ["link", "item", "thing"]
 
     for objectType in objectTypes:
         response = openhab_get(objectType)
