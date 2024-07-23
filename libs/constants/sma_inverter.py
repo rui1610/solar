@@ -12,6 +12,12 @@ CHANNELS_TO_USE = [
         "unit": "%",
     },
     {
+        "channel": "32341",
+        "device": "Netz",
+        "name": "Einspeisung aktuell",
+        "unit": "W",
+    },
+    {
         "channel": "30845",
         "device": "Batterie",
         "name": "Ladezustand aktuell",
@@ -21,19 +27,19 @@ CHANNELS_TO_USE = [
     {"channel": "31397", "device": "Batterie", "name": "Ladung gesamt", "unit": "W"},
     {
         "channel": "30773",
-        "device": "Solar Panele Dach vorne",
-        "name": "Leistung String 1",
+        "device": "PV vorne",
+        "name": "Leistung DC String 1",
         "unit": "W",
     },
     {
         "channel": "30961",
-        "device": "Solar Panele Dach vorne",
-        "name": "Leistung String 2",
+        "device": "PV vorne",
+        "name": "Leistung DC String 2",
         "unit": "W",
     },
     {
         "channel": "30529",
-        "device": "Solar Panele Dach vorne",
+        "device": "PV vorne",
         "name": "Ertrag gesamt",
         "unit": "W",
     },
@@ -45,7 +51,7 @@ CHANNELS_TO_USE = [
     },
     {
         "channel": "30775",
-        "device": "Solar Panele Dach vorne",
+        "device": "PV vorne",
         "name": "Leistung aktuell",
         "unit": "W",
     },
@@ -75,7 +81,7 @@ CHANNELS_TO_USE = [
     },
     {
         "channel": "30535",
-        "device": "Solar Panele Dach vorne",
+        "device": "PV vorne",
         "name": "Erzeugung heute",
         "unit": "W",
     },

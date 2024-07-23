@@ -290,7 +290,9 @@ def add_sma_modbus_bridge():
 
 
 # Add the SMA thing
-def add_sma_inverter_thing(name: str = "SMA Modbus Bridge") -> dict:
+def add_sma_inverter_thing(
+    name: str = "SMA Modbus Bridge", useAll: bool = False
+) -> dict:
     sma_modbus_bridge = None
     exists = exists_sma_inverter()
     uids = []
@@ -306,7 +308,7 @@ def add_sma_inverter_thing(name: str = "SMA Modbus Bridge") -> dict:
     if sma_modbus_bridge is not None:
         for thing in get_sma_things():
             # convert the thing to a SMA Tripower metadata object
-            this = InverterMetadata(thing)
+            this = InverterMetadata(thing, useAll=useAll)
             if this.channel is not None:
                 # Add the SMA channel
                 uids = add_sma_channel(

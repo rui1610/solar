@@ -32,10 +32,8 @@ class InverterMetadata:
     def __hash__(self):
         return hash(str(self))
 
-    def __init__(self, raw_data):
-        channelID = int(raw_data["SMA Modbus Registeradresse"])
-
-        this_item, label = getItemAndLabelName(channelID)
+    def __init__(self, raw_data, useAll: bool = False):
+        this_item, label = getItemAndLabelName(raw_data=raw_data, useAll=useAll)
         if this_item is not None:
             self.label = label
             self.channel = this_item.channel
@@ -49,18 +47,24 @@ class InverterMetadata:
             self.channel = None
 
 
-def getItemAndLabelName(channelId: str):
-    for item in CHANNELS_TO_USE:
-        # Map the item to the dataclass
-        thisItem = SmaChannelToUse(**item)
+def getItemAndLabelName(raw_data: str, useAll: bool = False):
+    channelId = int(raw_data["SMA Modbus Registeradresse"])
+    if useAll is False:
+        for item in CHANNELS_TO_USE:
+            # Map the item to the dataclass
+            thisItem = SmaChannelToUse(**item)
 
-        if int(thisItem.channel) == channelId:
-            label = f"{thisItem.device} - {thisItem.name} ({channelId})"
-            return thisItem, label
-
-        # if thisItem.channel == channelId:
-        #     label = f"{thisItem.device} - {thisItem.name} ({channelId})"
-        #     return thisItem, label
+            if int(thisItem.channel) == channelId:
+                label = f"{thisItem.device} - {thisItem.name} ({channelId})"
+                return thisItem, label
+    else:
+        channel = channelId
+        device = "SMA Device"
+        name = raw_data["Name (SMA Speedwire)"]
+        unit = "unkknown"
+        thisItem = SmaChannelToUse(channel=channel, device=device, name=name, unit=unit)
+        label = f"{thisItem.device} {channelId} - {thisItem.name}"
+        return thisItem, label
 
     return None, None
 
@@ -85,8 +89,12 @@ def getValueType(rawValue: str):
 def getFactor(raw_data: str):
     result = raw_data
 
-    # replace all , with a .
-    result = result.replace(",", ".")
-    result = float(result)
+    try:
+        # replace all , with a .
+        result = result.replace(",", ".")
+        result = result.replace("-", "")
+        result = float(result)
+    except Exception:
+        result = 1
 
     return result
