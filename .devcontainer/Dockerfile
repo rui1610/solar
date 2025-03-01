@@ -22,7 +22,7 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
 RUN npm install -g npm@10.8.1
-RUN npm i -g yo generator-easy-ui5
+#RUN npm i -g yo generator-easy-ui5
 
 COPY *   $HOME_FOLDER/
 

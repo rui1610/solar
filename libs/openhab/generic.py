@@ -17,7 +17,7 @@ password = config["OPENHAB_PASSWORD"]
 token = config["OPENHAB_TOKEN"]
 
 
-def openhab_post(type: str, data):
+def openhab_post(type: str, data, command=None, id=None):
     # Add a delay for not getting into any throteling issues
     time.sleep(SLEEP_TIME_SECONDS_WRITE)
 
@@ -28,12 +28,18 @@ def openhab_post(type: str, data):
         "Authorization": "Bearer %s" % token,
     }
     url = f"{base_url}/{type}s"
+    if id is not None and command is not None:
+        url = f"{url}/{id}/{command}"
 
     # convert data to a string
-    data = json.dumps(data)
+    if data is not None:
+        data = json.dumps(data)
 
     try:
-        response = requests.post(url=url, data=data, headers=headers)
+        if data is None:
+            response = requests.post(url=url, headers=headers)
+        else:
+            response = requests.post(url=url, data=data, headers=headers)
         response.raise_for_status()
         return response
     except requests.exceptions.HTTPError as errh:
