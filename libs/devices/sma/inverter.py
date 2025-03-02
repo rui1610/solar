@@ -1,4 +1,3 @@
-from libs.openhab.generic import openhab_post, openhab_delete, openhab_put, openhab_get
 from libs.constants.files import FILE_CONFIG_SMA_METADATA, FILE_CONFIG_SECRETS
 import json
 import os
@@ -7,7 +6,72 @@ import logging as log
 from libs.model.sma_tripower import InverterMetadata
 from dotenv import dotenv_values
 
-config = dotenv_values(FILE_CONFIG_SECRETS)
+
+from libs.openhab.generic import OpenhabClient
+import dataclasses
+
+
+@dataclasses.dataclass
+class SmaInverter:
+    ip_address: str
+    password: str
+    openhab: OpenhabClient
+    port: int = 502
+    id: int = 3
+    location: str = "VorderesDach"
+
+    def __init__(self, openhab: OpenhabClient):
+        config = dotenv_values(FILE_CONFIG_SECRETS)
+
+        self.ip_address = config["SMA_INVERTER_IP"]
+        self.password = config["SMA_INVERTER_PASSWORD"]
+        self.openhab = openhab
+
+        port = config["SMA_INVERTER_PORT"]
+        id = config["SMA_INVERTER_ID"]
+        location = config["SMA_INVERTER_LOCATION"]
+
+        if port is not None:
+            self.port = port
+        if id is not None:
+            self.id = id
+        if location is not None:
+            self.location = location
+
+    # Add the SMA thing
+    def add_as_thing(
+        self, name: str = "SMA Modbus Bridge", useAll: bool = False
+    ) -> dict:
+        sma_modbus_bridge = None
+        exists = exists_sma_inverter(openhab=self.openhab)
+        uids = []
+
+        if exists is False:
+            # Create the SMA Modbus Bridge thing
+            sma_modbus_bridge = add_sma_modbus_bridge(
+                openhab=self.openhab, sma_inverter=self
+            )
+            log.info(f"Added SMA Modbus Bridge: {sma_modbus_bridge}")
+        else:
+            sma_modbus_bridge = exists
+            log.info(f"SMA Modbus Bridge already exists: {sma_modbus_bridge}")
+
+        if sma_modbus_bridge is not None:
+            for thing in get_sma_things():
+                # convert the thing to a SMA Tripower metadata object
+                this = InverterMetadata(thing, useAll=useAll)
+                if this.channel is not None:
+                    # Add the SMA channel
+                    uids = add_sma_channel(
+                        openhab=self.openhab,
+                        sma_inverter=self,
+                        uids=uids,
+                        inverter=this,
+                        bridgeUID=sma_modbus_bridge["UID"],
+                    )
+                    log.info(f"Added SMA items for channel: {this.label}")
+
+        return uids
 
 
 def get_sma_things():
@@ -28,7 +92,9 @@ def get_sma_things():
 
 
 # Build the poller json payload
-def build_modbus_poller(bridgeUID: str, inverter: InverterMetadata) -> dict:
+def build_modbus_poller(
+    bridgeUID: str, inverter: InverterMetadata, sma_inverter: SmaInverter
+) -> dict:
     data = {
         "label": f"Modbus {inverter.label} - poller",
         "bridgeUID": bridgeUID,
@@ -42,7 +108,7 @@ def build_modbus_poller(bridgeUID: str, inverter: InverterMetadata) -> dict:
         },
         "properties": {},
         "thingTypeUID": "modbus:poller",
-        "location": config["SMA_INVERTER_LOCATION"],
+        "location": sma_inverter.location,
         "channels": [],
         "statusInfo": {},
         "firmwareStatus": {},
@@ -76,7 +142,7 @@ def build_modbus_data(bridgeUID: str, inverter: InverterMetadata) -> dict:
 
 
 # Build the item json payload
-def build_modbus_item(inverter: InverterMetadata) -> dict:
+def build_modbus_item(sma_inverter: SmaInverter, inverter: InverterMetadata) -> dict:
     item_name = (
         f"Item SMA {inverter.label} ".replace(" ", "_")
         .replace("-", "_")
@@ -95,7 +161,7 @@ def build_modbus_item(inverter: InverterMetadata) -> dict:
         "name": item_name,
         "tags": ["Point"],
         "type": "Number",
-        "location": config["SMA_INVERTER_LOCATION"],
+        "location": sma_inverter.location,
     }
 
     return data
@@ -112,13 +178,20 @@ def build_modbus_item_link(channelUID: str, itemName: str) -> dict:
 
 
 # Add the SMA poller
-def add_sma_poller(inverter: InverterMetadata, bridgeUID: str) -> dict:
+def add_sma_poller(
+    openhab: OpenhabClient,
+    inverter: InverterMetadata,
+    sma_inverter: SmaInverter,
+    bridgeUID: str,
+) -> dict:
     # set the default length
 
     # Build the poller thing
-    poller = build_modbus_poller(bridgeUID=bridgeUID, inverter=inverter)
+    poller = build_modbus_poller(
+        bridgeUID=bridgeUID, inverter=inverter, sma_inverter=sma_inverter
+    )
     # Create the poller thing
-    poller_response = openhab_post(type="thing", data=poller)
+    poller_response = openhab.post(type="thing", data=poller)
     response_poller = poller_response.json()
 
     return response_poller
@@ -126,7 +199,11 @@ def add_sma_poller(inverter: InverterMetadata, bridgeUID: str) -> dict:
 
 # Add the SMA thing
 def add_sma_thing(
-    label: str, channelID: str, valueType: str, poller_bridgeUID: str
+    openhab: OpenhabClient,
+    label: str,
+    channelID: str,
+    valueType: str,
+    poller_bridgeUID: str,
 ) -> dict:
     # Build the data thing
     data = build_modbus_data(
@@ -136,35 +213,41 @@ def add_sma_thing(
         valueType=valueType,
     )
     # Create the data thing
-    data_response = openhab_post(type="thing", data=data)
+    data_response = openhab.post(type="thing", data=data)
     response_data = data_response.json()
 
     return response_data
 
 
 # Add the SMA item
-def add_sma_item(inverter: InverterMetadata) -> dict:
+def add_sma_item(
+    openhab: OpenhabClient, inverter: InverterMetadata, sma_inverter: SmaInverter
+) -> dict:
     # Build the item
-    item = build_modbus_item(inverter)
+    item = build_modbus_item(sma_inverter=sma_inverter, inverter=inverter)
     # Create the item
-    item_response = openhab_put(type="item", data=item, id=item["name"])
+    item_response = openhab.put(type="item", data=item, id=item["name"])
     response_data = item_response.json()
 
     return response_data
 
 
 # Add the SMA item link
-def add_sma_item_link(dataID: str, itemName: str, channelUID: str) -> dict:
+def add_sma_item_link(
+    openhab: OpenhabClient, dataID: str, itemName: str, channelUID: str
+) -> dict:
     # Build the item
     item = build_modbus_item_link(channelUID=channelUID, itemName=itemName)
     # Create the item link
-    item_response = openhab_put(
+    item_response = openhab.put(
         type="link", data=item, id=f"{itemName}/{dataID}:number"
     )
 
 
 # Add the SMA data thing
-def add_sma_data(inverter: InverterMetadata, poller_bridgeUID: str) -> dict:
+def add_sma_data(
+    openhab: OpenhabClient, inverter: InverterMetadata, poller_bridgeUID: str
+) -> dict:
     # Create the data thing
     # Build the data thing
     data = build_modbus_data(
@@ -172,14 +255,14 @@ def add_sma_data(inverter: InverterMetadata, poller_bridgeUID: str) -> dict:
         inverter=inverter,
     )
     # Create the data thing
-    data_response = openhab_post(type="thing", data=data)
+    data_response = openhab.post(type="thing", data=data)
     response_data = data_response.json()
 
     return response_data
 
 
-def modbus_data_exists(inverter: InverterMetadata):
-    response = openhab_get("thing")
+def modbus_data_exists(openhab: OpenhabClient, inverter: InverterMetadata):
+    response = openhab.get("thing")
     response_json = response.json()
     for thing in response_json:
         if thing["label"] == f"Modbus {inverter.label} - data":
@@ -188,8 +271,8 @@ def modbus_data_exists(inverter: InverterMetadata):
     return False
 
 
-def modbus_poller_exists(inverter: InverterMetadata):
-    response = openhab_get("thing")
+def modbus_poller_exists(openhab: OpenhabClient, inverter: InverterMetadata):
+    response = openhab.get("thing")
     response_json = response.json()
     for thing in response_json:
         if thing["label"] == f"Modbus {inverter.label} - poller":
@@ -198,8 +281,8 @@ def modbus_poller_exists(inverter: InverterMetadata):
     return False
 
 
-def modbus_item_exists(inverter: InverterMetadata):
-    response = openhab_get("item")
+def modbus_item_exists(openhab: OpenhabClient, inverter: InverterMetadata):
+    response = openhab.get("item")
     response_json = response.json()
     for item in response_json:
         if item["label"] == f"SMA {inverter.label}":
@@ -209,16 +292,28 @@ def modbus_item_exists(inverter: InverterMetadata):
 
 
 # Add the SMA channel
-def add_sma_channel(uids: list, inverter: InverterMetadata, bridgeUID: str) -> dict:
+def add_sma_channel(
+    openhab: OpenhabClient,
+    uids: list,
+    sma_inverter: SmaInverter,
+    inverter: InverterMetadata,
+    bridgeUID: str,
+) -> dict:
     # Create the poller thing if not exists
-    if modbus_poller_exists(inverter=inverter) is False:
-        response_poller = add_sma_poller(inverter=inverter, bridgeUID=bridgeUID)
+    if modbus_poller_exists(openhab=openhab, inverter=inverter) is False:
+        response_poller = add_sma_poller(
+            openhab=openhab,
+            inverter=inverter,
+            sma_inverter=sma_inverter,
+            bridgeUID=bridgeUID,
+        )
         poller_bridgeUID = response_poller["UID"]
         uids.append(poller_bridgeUID)
 
     # Create the data thing if not exists
-    if modbus_data_exists(inverter=inverter) is False:
+    if modbus_data_exists(openhab=openhab, inverter=inverter) is False:
         response_data = add_sma_data(
+            openhab=openhab,
             inverter=inverter,
             poller_bridgeUID=poller_bridgeUID,
         )
@@ -227,11 +322,15 @@ def add_sma_channel(uids: list, inverter: InverterMetadata, bridgeUID: str) -> d
         uids.append(data_uid)
 
     # Create the item if not exists
-    if modbus_item_exists(inverter=inverter) is False:
-        response_item = add_sma_item(inverter=inverter)
+    if modbus_item_exists(openhab=openhab, inverter=inverter) is False:
+        response_item = add_sma_item(
+            openhab=openhab, inverter=inverter, sma_inverter=sma_inverter
+        )
         item_name = response_item["name"]
 
-        add_sma_item_link(dataID=data_uid, itemName=item_name, channelUID=data_uid)
+        add_sma_item_link(
+            openhab=openhab, dataID=data_uid, itemName=item_name, channelUID=data_uid
+        )
 
     # reverse the list of UIDs
     uids.reverse()
@@ -240,16 +339,16 @@ def add_sma_channel(uids: list, inverter: InverterMetadata, bridgeUID: str) -> d
 
 
 # Delete the SMA channels
-def delete_sma_channel(uids: str):
+def delete_sma_channel(openhab: OpenhabClient, uids: str):
     # iterate over the UID and delete the things
     for uid in uids:
-        response = openhab_delete(type="thing", uid=uid)
+        response = openhab.delete(type="thing", uid=uid)
 
 
 # Returns False if not exists or the thing object if exists
-def exists_sma_inverter():
+def exists_sma_inverter(openhab: OpenhabClient):
     result = False
-    response = openhab_get("thing")
+    response = openhab.get("thing")
     response_json = response.json()
 
     for thing in response_json:
@@ -259,12 +358,12 @@ def exists_sma_inverter():
     return result
 
 
-def build_sma_modbus_bridge(name: str = "SMA Modbus bridge"):
+def build_sma_modbus_bridge(sma_inverter: SmaInverter, name: str = "SMA Modbus bridge"):
     myuuid = os.urandom(5).hex()
 
-    ip = config["SMA_INVERTER_IP"]
-    port = config["SMA_INVERTER_PORT"]
-    id = config["SMA_INVERTER_ID"]
+    ip = sma_inverter.ip_address
+    port = sma_inverter.port
+    id = sma_inverter.id
 
     data = {
         "UID": f"modbus:modbus:{myuuid}",
@@ -279,49 +378,19 @@ def build_sma_modbus_bridge(name: str = "SMA Modbus bridge"):
     return data
 
 
-def add_sma_modbus_bridge():
+def add_sma_modbus_bridge(openhab: OpenhabClient, sma_inverter: SmaInverter):
     # Build the SMA Modbus Bridge thing
-    data = build_sma_modbus_bridge()
+    data = build_sma_modbus_bridge(sma_inverter)
     # Create the SMA Modbus Bridge thing
-    data_response = openhab_post(type="thing", data=data)
+    data_response = openhab.post(type="thing", data=data)
     result = data_response.json()
 
     return result
 
 
-# Add the SMA thing
-def add_sma_inverter_thing(
-    name: str = "SMA Modbus Bridge", useAll: bool = False
-) -> dict:
-    sma_modbus_bridge = None
-    exists = exists_sma_inverter()
-    uids = []
-
-    if exists is False:
-        # Create the SMA Modbus Bridge thing
-        sma_modbus_bridge = add_sma_modbus_bridge()
-        log.info(f"Added SMA Modbus Bridge: {sma_modbus_bridge}")
-    else:
-        sma_modbus_bridge = exists
-        log.info(f"SMA Modbus Bridge already exists: {sma_modbus_bridge}")
-
-    if sma_modbus_bridge is not None:
-        for thing in get_sma_things():
-            # convert the thing to a SMA Tripower metadata object
-            this = InverterMetadata(thing, useAll=useAll)
-            if this.channel is not None:
-                # Add the SMA channel
-                uids = add_sma_channel(
-                    uids=uids, inverter=this, bridgeUID=sma_modbus_bridge["UID"]
-                )
-                log.info(f"Added SMA items for channel: {this.label}")
-
-    return uids
-
-
-def pollerAlreadyExists(inverterMetadata: InverterMetadata):
+def pollerAlreadyExists(openhab: OpenhabClient, inverterMetadata: InverterMetadata):
     # check if the poller already exists
-    response_poller = openhab_get("thing")
+    response_poller = openhab.get("thing")
     response_poller_json = response_poller.json()
     for poller in response_poller_json:
         if (

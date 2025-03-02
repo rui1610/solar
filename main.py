@@ -1,20 +1,21 @@
-# from libs.devices.kostal.inverter import add_kostal_inverter_thing
 from libs.devices.kostal.inverter import KostalInverter
+from libs.devices.sma.inverter import SmaInverter
 from libs.openhab.generic import OpenhabClient
 from libs.constants.openhab import ADDON_ID_KOSTAL, ADDON_ID_MODBUS
 
-# install_addon(ADDON_ID_MODBUS)
-# install_addon(ADDON_ID_KOSTAL)
-
+# Create the Openhab client
 openhab = OpenhabClient()
+
+# Install all necessary addons
 openhab.install_addon(ADDON_ID_KOSTAL)
 openhab.install_addon(ADDON_ID_MODBUS)
 
-exit()
+# Create the Kostal inverter
+kostal_inverter = KostalInverter(openhab=openhab)
+# kostal_inverter.add_as_thing()
 
-kostal_inverter = KostalInverter()
-kostal_inverter.add_as_thing()
+# Create the SMA inverter
+sma_inverter = SmaInverter(openhab=openhab)
+# sma_inverter.add_as_thing()
 
-
-add_kostal_inverter_thing()
-add_sma_inverter_thing(useAll=False)
+openhab.delete_all_objects()

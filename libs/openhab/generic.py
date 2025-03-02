@@ -122,7 +122,7 @@ class OpenhabClient:
             "Authorization": "Bearer %s" % self.token,
         }
 
-        url = f"{base_url}/{type}s/{uid}"
+        url = f"{base_url}/{type}s/{uid}?force=true"
 
         try:
             response = requests.delete(url, headers=headers, timeout=8)
