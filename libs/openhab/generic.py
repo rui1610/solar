@@ -200,3 +200,17 @@ class OpenhabClient:
     def install_addon(self, id: str):
         response = self.post(type="addon", data=None, command="install", id=id)
         response.raise_for_status()
+
+    def object_exists(
+        self,
+        objectType: str,
+        checkType: str,
+        checkText: str,
+    ) -> bool:
+        response = self.get(objectType)
+        response_json = response.json()
+        for item in response_json:
+            if item[checkType] == checkText:
+                return True
+
+        return False

@@ -42,8 +42,14 @@ class SmaInverter:
     def add_as_thing(
         self, name: str = "SMA Modbus Bridge", useAll: bool = True
     ) -> dict:
+        openhab = self.openhab
+
         sma_modbus_bridge = None
-        exists = exists_sma_inverter(openhab=self.openhab)
+        exists = openhab.object_exists(
+            objectType="thing",
+            checkType="thingTypeUID",
+            checkText="modbus:tcp",
+        )
         uids = []
 
         if exists is False:
@@ -261,36 +267,6 @@ def add_sma_data(
     return response_data
 
 
-def modbus_data_exists(openhab: OpenhabClient, inverter: InverterMetadata):
-    response = openhab.get("thing")
-    response_json = response.json()
-    for thing in response_json:
-        if thing["label"] == f"Modbus {inverter.label} - data":
-            return True
-
-    return False
-
-
-def modbus_poller_exists(openhab: OpenhabClient, inverter: InverterMetadata):
-    response = openhab.get("thing")
-    response_json = response.json()
-    for thing in response_json:
-        if thing["label"] == f"Modbus {inverter.label} - poller":
-            return True
-
-    return False
-
-
-def modbus_item_exists(openhab: OpenhabClient, inverter: InverterMetadata):
-    response = openhab.get("item")
-    response_json = response.json()
-    for item in response_json:
-        if item["label"] == f"SMA {inverter.label}":
-            return True
-
-    return False
-
-
 # Add the SMA channel
 def add_sma_channel(
     openhab: OpenhabClient,
@@ -300,7 +276,14 @@ def add_sma_channel(
     bridgeUID: str,
 ) -> dict:
     # Create the poller thing if not exists
-    if modbus_poller_exists(openhab=openhab, inverter=inverter) is False:
+
+    modbus_poller_exists = openhab.object_exists(
+        objectType="thing",
+        checkType="label",
+        checkText=f"Modbus {inverter.label} - poller",
+    )
+
+    if modbus_poller_exists is False:
         response_poller = add_sma_poller(
             openhab=openhab,
             inverter=inverter,
@@ -311,7 +294,12 @@ def add_sma_channel(
         uids.append(poller_bridgeUID)
 
     # Create the data thing if not exists
-    if modbus_data_exists(openhab=openhab, inverter=inverter) is False:
+    modbus_data_exists = openhab.object_exists(
+        objectType="thing",
+        checkType="label",
+        checkText=f"Modbus {inverter.label} - data",
+    )
+    if modbus_data_exists is False:
         response_data = add_sma_data(
             openhab=openhab,
             inverter=inverter,
@@ -322,7 +310,12 @@ def add_sma_channel(
         uids.append(data_uid)
 
     # Create the item if not exists
-    if modbus_item_exists(openhab=openhab, inverter=inverter) is False:
+    modbus_item_exists = openhab.object_exists(
+        objectType="item",
+        checkType="label",
+        checkText=f"SMA {inverter.label}",
+    )
+    if modbus_item_exists is False:
         response_item = add_sma_item(
             openhab=openhab, inverter=inverter, sma_inverter=sma_inverter
         )
@@ -343,19 +336,6 @@ def delete_sma_channel(openhab: OpenhabClient, uids: str):
     # iterate over the UID and delete the things
     for uid in uids:
         response = openhab.delete(type="thing", uid=uid)
-
-
-# Returns False if not exists or the thing object if exists
-def exists_sma_inverter(openhab: OpenhabClient):
-    result = False
-    response = openhab.get("thing")
-    response_json = response.json()
-
-    for thing in response_json:
-        if thing["thingTypeUID"] == "modbus:tcp":
-            return thing
-
-    return result
 
 
 def build_sma_modbus_bridge(sma_inverter: SmaInverter, name: str = "SMA Modbus bridge"):
@@ -386,17 +366,3 @@ def add_sma_modbus_bridge(openhab: OpenhabClient, sma_inverter: SmaInverter):
     result = data_response.json()
 
     return result
-
-
-def pollerAlreadyExists(openhab: OpenhabClient, inverterMetadata: InverterMetadata):
-    # check if the poller already exists
-    response_poller = openhab.get("thing")
-    response_poller_json = response_poller.json()
-    for poller in response_poller_json:
-        if (
-            poller["label"]
-            == f"Poller SMA {inverterMetadata.label} ({inverterMetadata.channel})"
-        ):
-            # poller already exists
-            return True
-    return False

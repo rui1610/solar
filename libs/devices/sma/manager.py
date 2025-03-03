@@ -22,43 +22,45 @@ class SmaManager:
     # Add the SMA Manager thing
     def add_as_thing(self) -> dict:
         name = self.label
-        result = self.exists_sma_manager_thing()
+        openhab = self.openhab
+        result = None
 
-        if result is False:
+        exists = openhab.object_exists(
+            objectType="thing",
+            checkType="thingTypeUID",
+            checkText="smaenergymeter:energymeter",
+        )
+        # result = self.exists_sma_manager_thing(self.openhab)
+
+        if exists is False:
             # Build the data thing
-            data = self.build_sma_manager_thing(name)
+            data = build_sma_manager_thing(self, name)
             # Create the data thing
             data_response = self.openhab.post(type="thing", data=data)
             result = data_response.json()
 
-        return result
-
-    # Build the poller json payload
-    def build_sma_manager_thing(self, name: str) -> dict:
-        myuuid = os.urandom(5).hex()
-
-        data = {
-            "UID": f"smaenergymeter:energymeter:{myuuid}",
-            "label": name,
-            "configuration": {
-                "serialNumber": f"{self.serial_number}",
-            },
-            "thingTypeUID": "smaenergymeter:energymeter",
-            "ID": myuuid,
-            "location": self.location,
-        }
-
-        return data
-
-    # Returns False if not exists or the thing object if exists
-    def exists_sma_manager_thing(self):
-        result = False
-        response = self.openhab.get("thing")
-        if response is not None:
-            response_json = response.json()
-
-            for thing in response_json:
-                if thing["thingTypeUID"] == "smaenergymeter:energymeter":
-                    return thing
+        sma_manager_item_exists = openhab.object_exists(
+            objectType="thing",
+            checkType="thingTypeUID",
+            checkText="smaenergymeter:energymeter",
+        )
 
         return result
+
+
+# Build the poller json payload
+def build_sma_manager_thing(smaManager: SmaManager, name: str) -> dict:
+    myuuid = os.urandom(5).hex()
+
+    data = {
+        "UID": f"smaenergymeter:energymeter:{myuuid}",
+        "label": name,
+        "configuration": {
+            "serialNumber": f"{smaManager.serial_number}",
+        },
+        "thingTypeUID": "smaenergymeter:energymeter",
+        "ID": myuuid,
+        "location": smaManager.location,
+    }
+
+    return data
