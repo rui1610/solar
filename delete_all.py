@@ -1,3 +1,5 @@
-from libs.openhab.generic import delete_all_objects
+from libs.openhab.generic import OpenhabClient
 
-delete_all_objects()
+# Create the Openhab client
+openhab = OpenhabClient()
+openhab.delete_all_objects()

@@ -40,7 +40,7 @@ class SmaInverter:
 
     # Add the SMA thing
     def add_as_thing(
-        self, name: str = "SMA Modbus Bridge", useAll: bool = False
+        self, name: str = "SMA Modbus Bridge", useAll: bool = True
     ) -> dict:
         sma_modbus_bridge = None
         exists = exists_sma_inverter(openhab=self.openhab)
