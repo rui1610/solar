@@ -2,9 +2,15 @@ import streamlit as st
 import pandas as pd
 
 st.write("""
-         # Unsere Solaranlage
+         # Unsere Solaranlagen
+         
+         ## Die alte Anlage
+         
          """)
 
 df = pd.read_excel("Kostal4.2.xlsx")
-# df.set_axis(["Datum", "Uhrzeit", "Leistung", "Ertrag"], axis=1, inplace=True)
-st.bar_chart(df)
+
+# delete all rows where the value of the column "Daily" is 0
+df = df[df.Daily != 0]
+
+st.line_chart(df, x="Date", y=["Daily"], y_label="Daily production in kWh")
