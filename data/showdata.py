@@ -36,7 +36,6 @@ df_sol = df_sol.pivot_table(
     index="Datum", columns="Anlage", values="Daily", aggfunc="sum"
 )
 
-
 # Sort the data by the column "Datum" in descending order
 df_sol = df_sol.sort_values("Datum", ascending=False)
 st.write("## Tägliche Produktion in Wh")
@@ -44,7 +43,20 @@ st.write("## Tägliche Produktion in Wh")
 st.line_chart(df_sol)
 
 # Accumulate the daily values to get the total production for each month
-df_sol = df_sol.resample("M").sum()
-st.write("## Monatliche Produktion in Wh")
+df_sol_d = df_sol.resample("D").sum()
+st.write("## Tägliche Produktion in Wh (kummuliert)")
 # Display the data in a chart
-st.bar_chart(df_sol)
+st.bar_chart(df_sol_d)
+
+# Accumulate the daily values to get the total production for each month
+df_sol_w = df_sol.resample("W").sum()
+st.write("## Wöchentliche Produktion in Wh (kummuliert)")
+# Display the data in a chart
+st.bar_chart(df_sol_w)
+
+
+# Accumulate the daily values to get the total production for each month
+df_sol_m = df_sol.resample("ME").sum()
+st.write("## Monatliche Produktion in Wh (kummuliert)")
+# Display the data in a chart
+st.bar_chart(df_sol_m, width=1000)
