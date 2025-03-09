@@ -69,7 +69,7 @@ CHANNELS_TO_USE = [
     },
     {
         "channel": "30535",
-        "device": "PV vorne",
+        "device": "Solarmodule",
         "name": "Erzeugung heute",
         "unit": "W",
     },

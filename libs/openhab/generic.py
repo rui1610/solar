@@ -211,6 +211,6 @@ class OpenhabClient:
         response_json = response.json()
         for item in response_json:
             if item[checkType] == checkText:
-                return True
+                return item
 
-        return False
+        return None

@@ -21,7 +21,7 @@ class SmaManager:
 
     # Add the SMA Manager thing
     def add_as_thing(self) -> dict:
-        name = self.label
+        name = self.name
         openhab = self.openhab
         result = None
 

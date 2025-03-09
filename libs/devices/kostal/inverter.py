@@ -13,6 +13,7 @@ class KostalInverter:
     user: str = "pvserver"
     location: str = "SuedWest"
     label: str = "KOSTAL PIKO 4.2"
+    name: str = "Solar1"
 
     def __init__(self, openhab: OpenhabClient):
         config = dotenv_values(FILE_CONFIG_SECRETS)
@@ -21,8 +22,12 @@ class KostalInverter:
         user = config["KOSTAL_PICO_USER"]
         password = config["KOSTAL_PICO_PASSWORD"]
         location = config["KOSTAL_PICO_LOCATION"]
+        name = config["KOSTAL_PICO_NAME"]
 
         self.openhab = openhab
+
+        if name is not None:
+            self.name = name
 
         if ip is not None:
             self.ip_address = ip
@@ -38,7 +43,7 @@ class KostalInverter:
 
     # Add the Kostal thing
     def add_as_thing(self) -> dict:
-        name = self.label
+        name = self.name
         result = self.exists_kostal_thing()
 
         if result is False:
