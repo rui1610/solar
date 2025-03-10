@@ -11,8 +11,7 @@ def install_addon(openhab: OpenhabClient, id: str):
 
 
 def cleanup_string(string: str) -> str:
-    result = string.replace(" ", "_")
-    result = result.replace("ä", "ae")
+    result = string.replace("ä", "ae")
     result = result.replace("Ä", "Ae")
     result = result.replace("ö", "oe")
     result = result.replace("Ö", "Oe")
@@ -22,5 +21,6 @@ def cleanup_string(string: str) -> str:
     result = result.replace("-", " ")
     result = result.replace(":", " ")
     result = result.replace("  ", " ")
+    result = result.replace(" ", "_")
 
     return result
