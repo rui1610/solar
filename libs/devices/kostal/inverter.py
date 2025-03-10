@@ -9,19 +9,15 @@ THING_TYPE_KOSTAL = "kostalinverter:piko1020"
 CHANNELS_TO_USE = [
     {
         "typeUID": "kostalinverter:device-local-grid-output-power",
-        "myLabel": "Grid Output Power",
+        "myLabel": "Aktuelle Leistung",
     },
     {
         "typeUID": "kostalinverter:statistic-yield-day-second-gen",
-        "myLabel": "Statistic Yield Day Second Gen",
+        "myLabel": "Erzeugte Energie heute",
     },
     {
         "typeUID": "kostalinverter:statistic-yield-total-second-gen",
-        "myLabel": "Statistic Yield Total Second Gen",
-    },
-    {
-        "typeUID": "kostalinverter:device-local-operating-status",
-        "myLabel": "Device Local Operating Status",
+        "myLabel": "Erzeugte Energie gesamt",
     },
 ]
 

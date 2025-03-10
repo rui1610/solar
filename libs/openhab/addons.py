@@ -19,4 +19,8 @@ def cleanup_string(string: str) -> str:
     result = result.replace("ü", "ue")
     result = result.replace("Ü", "Ue")
     result = result.replace("ß", "ss")
+    result = result.replace("-", " ")
+    result = result.replace(":", " ")
+    result = result.replace("  ", " ")
+
     return result
