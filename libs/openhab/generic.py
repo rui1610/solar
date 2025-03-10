@@ -145,7 +145,7 @@ class OpenhabClient:
             response = requests.delete(url, headers=headers, timeout=8)
             response.raise_for_status()
 
-    def get(self, type: str):
+    def get(self, type: str, thing_id: str = None):
         # Add a delay for not getting into any throteling issues
         time.sleep(SLEEP_TIME_SECONDS_READ)
 
@@ -157,6 +157,8 @@ class OpenhabClient:
             "Authorization": "Bearer %s" % self.token,
         }
         url = f"{base_url}/{type}s"
+        if thing_id is not None:
+            url = f"{url}/{thing_id}"
 
         try:
             response = requests.get(url, headers=headers, timeout=8)

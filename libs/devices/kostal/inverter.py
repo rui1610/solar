@@ -1,8 +1,28 @@
-import os
 from libs.constants.files import FILE_CONFIG_SECRETS
 from libs.openhab.generic import OpenhabClient
 from dotenv import dotenv_values
 import dataclasses
+
+
+THING_TYPE_KOSTAL = "kostalinverter:piko1020"
+CHANNELS_TO_USE = [
+    {
+        "typeUID": "kostalinverter:device-local-grid-output-power",
+        "myLabel": "Grid Output Power",
+    },
+    {
+        "typeUID": "kostalinverter:statistic-yield-day-second-gen",
+        "myLabel": "Statistic Yield Day Second Gen",
+    },
+    {
+        "typeUID": "kostalinverter:statistic-yield-total-second-gen",
+        "myLabel": "Statistic Yield Total Second Gen",
+    },
+    {
+        "typeUID": "kostalinverter:device-local-operating-status",
+        "myLabel": "Device Local Operating Status",
+    },
+]
 
 
 @dataclasses.dataclass
@@ -14,6 +34,7 @@ class KostalInverter:
     location: str = "SuedWest"
     label: str = "KOSTAL PIKO 4.2"
     name: str = "Solar1"
+    channels: list = dataclasses.field(default_factory=list)
 
     def __init__(self, openhab: OpenhabClient):
         config = dotenv_values(FILE_CONFIG_SECRETS)
@@ -44,46 +65,47 @@ class KostalInverter:
     # Add the Kostal thing
     def add_as_thing(self) -> dict:
         name = self.name
-        result = self.exists_kostal_thing()
 
-        if result is False:
+        result = self.openhab.object_exists(
+            objectType="thing",
+            checkType="thingTypeUID",
+            checkText=THING_TYPE_KOSTAL,
+        )
+
+        if result is None:
             # Build the data thing
             data = self.build_kostal_thing(name)
             # Create the data thing
             data_response = self.openhab.post(type="thing", data=data)
             result = data_response.json()
 
+        # Get the channels
+        self.channels = self.get_thing_channels()
+
+        return result
+
+    def get_thing_channels(self):
+        result = []
+        data_response = self.openhab.get("thing-type", THING_TYPE_KOSTAL)
+        data_response_json = data_response.json()
+        channels = data_response_json["channels"]
+        for channel in channels:
+            for channel_to_use in CHANNELS_TO_USE:
+                if channel["typeUID"] == channel_to_use["typeUID"]:
+                    result.append(channel)
         return result
 
     # Build the poller json payload
-    def build_kostal_thing(self, name: str) -> dict:
-        myuuid = os.urandom(5).hex()
-
-        data = {
-            "UID": f"kostalinverter:piko1020:{myuuid}",
-            "label": name,
-            "configuration": {
-                "url": f"http://{self.ip_address}",
-                "username": self.user,
-                "password": self.password,
-            },
-            "channels": [],
-            "thingTypeUID": "kostalinverter:piko1020",
-            "ID": myuuid,
-            "location": self.location,
-        }
+    def build_kostal_things(self) -> dict:
+        for channel in self.channels:
+            print(channel)
+            data = {
+                "name": f"{self.name}_Grid_Output_Power",
+                "label": "Grid Output Power",
+                "category": "Energy",
+                "groupNames": [],
+                "type": "Number:Power",
+                "tags": ["Point"],
+            }
 
         return data
-
-    # Returns False if not exists or the thing object if exists
-    def exists_kostal_thing(self):
-        result = False
-        response = self.openhab.get("thing")
-        if response is not None:
-            response_json = response.json()
-
-            for thing in response_json:
-                if thing["thingTypeUID"] == "kostalinverter:piko1020":
-                    return thing
-
-        return result

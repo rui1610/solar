@@ -9,6 +9,7 @@ from dotenv import dotenv_values
 class SmaManager:
     openhab: OpenhabClient
     serial_number: str
+    name: str = "Solar2 - SMA Manager"
     location: str = "Schaltschrank"
     label: str = "SMA Manager"
 
