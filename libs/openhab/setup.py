@@ -1,6 +1,6 @@
 import dataclasses
 from libs.openhab.generic import OpenhabClient
-from libs.model.openhab import ThingConfig, ItemConfig
+from libs.model.openhab import ThingConfig
 from libs.openhab.addons import cleanup_string
 
 
@@ -8,6 +8,8 @@ from libs.openhab.addons import cleanup_string
 class OpenhabThing:
     openhab: OpenhabClient
     thingConfig: ThingConfig
+    thing: dict
+    items: list
 
     def __init__(self, openhab: OpenhabClient, thingConfig: ThingConfig):
         self.openhab = openhab
@@ -40,59 +42,45 @@ class OpenhabThing:
                 "location": config.location,
             }
             data_response = openhab.post(type="thing", data=data)
-            result = data_response.json()
+            self.thing = data_response.json()
         else:
-            result = checkIfExists
+            self.thing = checkIfExists
 
-        return result
+    def createItemsFromChannels(self, channelsToUse: list = None):
+        thing = self.thing
+        name = cleanup_string(f"{thing['label']}")
 
-    def getThingChannels(self):
-        channels = []
-        thingTypeUid = self.thingConfig.thingTypeUid
-        data_response = self.openhab.get("thing-type", thingTypeUid)
-        data_response_json = data_response.json()
-        channels = data_response_json["channels"]
+        all_channels = self.thing["channels"]
 
-        return channels
+        if channelsToUse is not None and len(channelsToUse) > 0:
+            filteredChannels = []
+            for channel in all_channels:
+                for channel_to_use in channelsToUse:
+                    if channel["channelTypeUID"] == channel_to_use["typeUID"]:
+                        channel["label"] = channel_to_use["myLabel"]
+                        filteredChannels.append(channel)
+            all_channels = filteredChannels
 
+        for channel in all_channels:
+            data = {
+                "name": name,
+                "label": thing["label"],
+                "category": channel["category"],
+                "groupNames": thing["groupNames"],
+                "type": self.type,
+                "tags": self.tags,
+            }
+            data_response = self.openhab.put(type="item", data=data, id=name)
+            item = data_response.json()
 
-@dataclasses.dataclass
-class OpenhabItem:
-    openhab: OpenhabClient
-    thingConfig: ThingConfig
-    itemConfig: ItemConfig
+            itemName = item["name"]
 
-    def __init__(self, openhab: OpenhabClient, thingConfig: ThingConfig):
-        self.openhab = openhab
-        self.thingConfig = thingConfig
-        self.itemConfig = ItemConfig
+            data_link = {
+                "channelUID": f"{item['UID']}:{id}",
+                "configuration": {},
+                "itemName": itemName,
+            }
 
-    def createItemFromChannel(self, channel: dict):
-        openhab = self.openhab
-        thingConfig = self.thingConfig
-        itemConfig = self.itemConfig
-
-        name = cleanup_string(f"{thingConfig.label} - {itemConfig.label}")
-
-        data = {
-            "name": name,
-            "label": {itemConfig.label},
-            "category": itemConfig.category,
-            "groupNames": itemConfig.groupNames,
-            "type": itemConfig.type,
-            "tags": itemConfig.tags,
-        }
-        data_response = self.openhab.put(type="item", data=data, id=name)
-        item = data_response.json()
-
-        itemName = item["name"]
-
-        data_link = {
-            "channelUID": f"{item['UID']}:{id}",
-            "configuration": {},
-            "itemName": itemName,
-        }
-
-        itemLink_response = openhab.put(
-            type="link", data=data_link, id=f"{itemName}/{item['UID']}:{id}"
-        )
+            itemLink_response = self.openhab.put(
+                type="link", data=data_link, id=f"{itemName}/{item['UID']}:{id}"
+            )
