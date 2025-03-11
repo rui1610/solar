@@ -1,6 +1,7 @@
 import dataclasses
 from libs.openhab.generic import OpenhabClient
-from libs.model.openhab import ThingConfig
+from libs.model.openhab import ThingConfig, ItemConfig
+from libs.openhab.addons import cleanup_string
 
 
 @dataclasses.dataclass
@@ -45,13 +46,53 @@ class OpenhabThing:
 
         return result
 
-    # def createItemsAndLinks(self, thing: OpenhabThing):
-
     def getThingChannels(self):
         channels = []
-        thingType = self.thingConfig.thingType
-        data_response = self.openhab.get("thing-type", thingType)
+        thingTypeUid = self.thingConfig.thingTypeUid
+        data_response = self.openhab.get("thing-type", thingTypeUid)
         data_response_json = data_response.json()
         channels = data_response_json["channels"]
 
         return channels
+
+
+@dataclasses.dataclass
+class OpenhabItem:
+    openhab: OpenhabClient
+    thingConfig: ThingConfig
+    itemConfig: ItemConfig
+
+    def __init__(self, openhab: OpenhabClient, thingConfig: ThingConfig):
+        self.openhab = openhab
+        self.thingConfig = thingConfig
+        self.itemConfig = ItemConfig
+
+    def createItemFromChannel(self, channel: dict):
+        openhab = self.openhab
+        thingConfig = self.thingConfig
+        itemConfig = self.itemConfig
+
+        name = cleanup_string(f"{thingConfig.label} - {itemConfig.label}")
+
+        data = {
+            "name": name,
+            "label": {itemConfig.label},
+            "category": itemConfig.category,
+            "groupNames": itemConfig.groupNames,
+            "type": itemConfig.type,
+            "tags": itemConfig.tags,
+        }
+        data_response = self.openhab.put(type="item", data=data, id=name)
+        item = data_response.json()
+
+        itemName = item["name"]
+
+        data_link = {
+            "channelUID": f"{item['UID']}:{id}",
+            "configuration": {},
+            "itemName": itemName,
+        }
+
+        itemLink_response = openhab.put(
+            type="link", data=data_link, id=f"{itemName}/{item['UID']}:{id}"
+        )

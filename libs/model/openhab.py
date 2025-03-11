@@ -11,3 +11,12 @@ class ThingConfig:
     location: str
     configuration: dict
     channels: list
+
+
+class ItemConfig:
+    name: str
+    label: str
+    category: str
+    groupNames: list
+    type: str
+    tags: list

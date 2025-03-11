@@ -95,46 +95,6 @@ class KostalInverter(ThingConfig):
 #         if location is not None:
 #             self.location = location
 
-#     # Add the Kostal thing
-#     def add_as_thing(self) -> dict:
-#         name = self.name
-#         myuuid = None
-
-#         result = self.openhab.object_exists(
-#             objectType="thing",
-#             checkType="thingTypeUID",
-#             checkText=THING_TYPE_KOSTAL,
-#         )
-
-#         if result is None:
-#             # Build the data thing
-#             myuuid = os.urandom(5).hex()
-#             data = {
-#                 "UID": f"kostalinverter:piko1020:{myuuid}",
-#                 "label": name,
-#                 "configuration": {
-#                     "url": f"http://{self.ip_address}",
-#                     "username": self.user,
-#                     "password": self.password,
-#                 },
-#                 "channels": [],
-#                 "thingTypeUID": "kostalinverter:piko1020",
-#                 "ID": myuuid,
-#                 "location": self.location,
-#             }
-#             # Create the data thing
-#             data_response = self.openhab.post(type="thing", data=data)
-#             result = data_response.json()
-#             myuuid = result["UID"]
-#         else:
-#             myuuid = result["UID"]
-
-#         # Get the channels
-#         self.channels = self.get_thing_channels()
-
-#         self.build_kostal_items_from_channels(myuuid)
-
-#         return result
 
 #     def get_thing_channels(self):
 #         result = []
