@@ -36,7 +36,7 @@ class OpenhabThing:
             "ID": self.id,
             "location": self.location,
         }
-        data_response = self.openhab.post(type="thing", data=data)
+        data_response = openhab.post(type="thing", data=data)
         result = data_response.json()
 
         return result
