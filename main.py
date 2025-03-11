@@ -14,8 +14,8 @@ openhab = OpenhabClient()
 
 # Create the SMA Manager
 openhab.install_addon(ADDON_SMA_ENERGY_METER)
-config = SmaManagerConfig(openhab=openhab)
-sma_manager = OpenhabThing(SmaManagerConfig=config)
+config = SmaManagerConfig()
+sma_manager = OpenhabThing(openhab=openhab, thingConfig=config)
 sma_manager.createThing()
 exit()
 

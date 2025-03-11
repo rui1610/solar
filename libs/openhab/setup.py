@@ -1,23 +1,16 @@
 import dataclasses
 from libs.openhab.generic import OpenhabClient
+from libs.model.openhab import ThingConfig
 
 
 @dataclasses.dataclass
 class OpenhabThing:
     openhab: OpenhabClient
-    thingType: str
-    thingTypeUid: str
-    id: str
-    uid: str
-    label: str
-    location: str
-    configuration: dict
-    channels: list
+    thingConfig: ThingConfig
 
-    def __init__(self, openhab: OpenhabClient, thingTypeUid: str):
+    def __init__(self, openhab: OpenhabClient, thingConfig: ThingConfig):
         self.openhab = openhab
-        self.thingType = thingTypeUid
-        self.thingTypeUid = thingTypeUid
+        self.thingConfig = thingConfig
 
     def exists(self):
         openhab = self.openhab
@@ -27,14 +20,15 @@ class OpenhabThing:
 
     def createThing(self):
         openhab = self.openhab
+        config = self.thingConfig
         data = {
-            "UID": self.uid,
-            "label": self.label,
-            "configuration": self.configuration,
-            "channels": self.channels,
-            "thingTypeUID": self.thingTypeUid,
-            "ID": self.id,
-            "location": self.location,
+            "UID": config.uid,
+            "label": config.label,
+            "configuration": config.configuration,
+            "channels": config.channels,
+            "thingTypeUID": config.thingTypeUid,
+            "ID": config.id,
+            "location": config.location,
         }
         data_response = openhab.post(type="thing", data=data)
         result = data_response.json()
