@@ -10,6 +10,42 @@ from dotenv import dotenv_values
 from libs.openhab.generic import OpenhabClient
 import dataclasses
 
+from libs.model.openhab import ThingConfig
+
+
+@dataclasses.dataclass
+class SmaInverterModbusBridge(ThingConfig):
+    thingTypeUid: str
+    thingType: str
+    id: str
+    uid: str
+    label: str
+    location: str
+    configuration: dict
+    channels: list
+
+    def __init__(self):
+        config = dotenv_values(FILE_CONFIG_SECRETS)
+
+        ip_address = config["SMA_INVERTER_IP"]
+
+        modbus_port = config["SMA_INVERTER_PORT"]
+        name = config["SMA_INVERTER_NAME"]
+        modbus_id = config["SMA_INVERTER_ID"]
+        location = config["SMA_INVERTER_LOCATION"]
+
+        myuuid = os.urandom(5).hex()
+        self.uid = f"modbus:tcp:{myuuid}"
+        self.id = myuuid
+        self.label = name + " - Modbus Bridge"
+        self.configuration = (
+            {"host": ip_address, "id": modbus_id, "port": modbus_port},
+        )
+        self.channels = []
+        self.thingTypeUid = "modbus:tcp"
+        self.thingType = "thingTypeUID"
+        self.location = location
+
 
 @dataclasses.dataclass
 class SmaInverter:
