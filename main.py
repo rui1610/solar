@@ -23,8 +23,6 @@ openhab.install_addon(ADDON_ID_KOSTAL)
 config = KostalInverter()
 kostal_inverter = OpenhabThing(openhab=openhab, thingConfig=config)
 thing = kostal_inverter.createThing()
-exit()
-
 
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)

@@ -48,9 +48,9 @@ class KostalInverter(ThingConfig):
         self.id = myuuid
         self.label = name
         self.configuration = {
-            "url": f"http://{self.ip_address}",
-            "username": self.user,
-            "password": self.password,
+            "url": f"http://{ip}",
+            "username": user,
+            "password": password,
         }
         self.channels = []
         self.thingTypeUid = "kostalinverter:piko1020"
