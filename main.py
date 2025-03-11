@@ -21,6 +21,9 @@ sma_manager = thing.createThing()
 openhab.install_addon(ADDON_ID_KOSTAL)
 thing = OpenhabThing(openhab=openhab, thingConfig=KostalInverter())
 kostal_inverter = thing.createThing()
+channels = thing.getThingChannels(kostal_inverter)
+for channel in channels:
+    print(channel)
 
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)

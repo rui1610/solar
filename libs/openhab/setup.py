@@ -45,8 +45,11 @@ class OpenhabThing:
 
         return result
 
-    def getThingChannels(self, thingType: str):
+    # def createItemsAndLinks(self, thing: OpenhabThing):
+
+    def getThingChannels(self):
         channels = []
+        thingType = self.thingConfig.thingType
         data_response = self.openhab.get("thing-type", thingType)
         data_response_json = data_response.json()
         channels = data_response_json["channels"]
