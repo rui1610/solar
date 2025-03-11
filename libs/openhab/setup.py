@@ -21,17 +21,27 @@ class OpenhabThing:
     def createThing(self):
         openhab = self.openhab
         config = self.thingConfig
-        data = {
-            "UID": config.uid,
-            "label": config.label,
-            "configuration": config.configuration,
-            "channels": config.channels,
-            "thingTypeUID": config.thingTypeUid,
-            "ID": config.id,
-            "location": config.location,
-        }
-        data_response = openhab.post(type="thing", data=data)
-        result = data_response.json()
+
+        checkIfExists = openhab.object_exists(
+            objectType="thing",
+            checkText=config.thingTypeUid,
+            checkType=config.thingType,
+        )
+
+        if checkIfExists is None:
+            data = {
+                "UID": config.uid,
+                "label": config.label,
+                "configuration": config.configuration,
+                "channels": config.channels,
+                "thingTypeUID": config.thingTypeUid,
+                "ID": config.id,
+                "location": config.location,
+            }
+            data_response = openhab.post(type="thing", data=data)
+            result = data_response.json()
+        else:
+            result = checkIfExists
 
         return result
 
