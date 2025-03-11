@@ -38,9 +38,8 @@ class SmaInverterModbusBridge(ThingConfig):
         self.uid = f"modbus:tcp:{myuuid}"
         self.id = myuuid
         self.label = name + " - Modbus Bridge"
-        self.configuration = (
-            {"host": ip_address, "id": modbus_id, "port": modbus_port},
-        )
+        self.configuration = {"host": ip_address, "id": modbus_id, "port": modbus_port}
+
         self.channels = []
         self.thingTypeUid = "modbus:tcp"
         self.thingType = "thingTypeUID"

@@ -18,16 +18,16 @@ config = SmaManagerConfig()
 sma_manager = OpenhabThing(openhab=openhab, thingConfig=config)
 thing = sma_manager.createThing()
 
+# Create the Kostal inverter
+openhab.install_addon(ADDON_ID_KOSTAL)
+config = KostalInverter()
+kostal_inverter = OpenhabThing(openhab=openhab, thingConfig=config)
+thing = kostal_inverter.createThing()
+exit()
+
+
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)
 config = SmaInverterModbusBridge()
 sma_inverter_brigde = OpenhabThing(openhab=openhab, thingConfig=config)
 thing = sma_inverter_brigde.createThing()
-
-
-exit()
-
-# Create the Kostal inverter
-openhab.install_addon(ADDON_ID_KOSTAL)
-kostal_inverter = KostalInverter(openhab=openhab)
-kostal_inverter.add_as_thing()
