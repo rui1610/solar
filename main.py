@@ -24,7 +24,7 @@ kostal_inverter = thing.createThing()
 channels = thing.getThingChannels()
 for channel in channels:
     item = OpenhabItem(openhab=openhab, thingConfig=thing)
-    item.createItemFromChannel()
+    item.createItemFromChannel(channel=channel)
 
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)
