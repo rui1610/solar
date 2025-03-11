@@ -1,17 +1,38 @@
 import os
 from libs.openhab.generic import OpenhabClient
+from libs.openhab.setup import OpenhabThing
 import dataclasses
 from libs.constants.files import FILE_CONFIG_SECRETS
 from dotenv import dotenv_values
 
 
 @dataclasses.dataclass
+class SmaManagerConfig:
+    thing: OpenhabThing
+
+    def __init__(self, openhab: OpenhabClient):
+        config = dotenv_values(FILE_CONFIG_SECRETS)
+        thingTypeId = "smaenergymeter:energymeter"
+        serial_number = config["SMA_MANAGER_SERIAL_NUMBER"]
+        thingTypeId = "smaenergymeter:energymeter"
+        name = config["SMA_MANAGER_NAME"]
+        location = config["SMA_MANAGER_LOCATION"]
+
+        thing = OpenhabThing(
+            openhab=openhab, thingTypeId=thingTypeId, thingType="thingTypeUID"
+        )
+        thing.channels = []
+        thing.location = location
+        thing.label = name
+        thing.configuration = {"serialNumber": f"{serial_number}"}
+        myuuid = os.urandom(5).hex()
+        thing.uid = f"smaenergymeter:energymeter:{myuuid}"
+
+
+@dataclasses.dataclass
 class SmaManager:
-    openhab: OpenhabClient
-    serial_number: str
-    name: str = "Solar2 - SMA Manager"
-    location: str = "Schaltschrank"
-    label: str = "SMA Manager"
+    thing: OpenhabThing
+    config: SmaManagerConfig
 
     def __init__(self, openhab: OpenhabClient):
         self.openhab = openhab

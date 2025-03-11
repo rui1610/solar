@@ -6,15 +6,17 @@ from libs.constants.openhab import (
 )
 from libs.devices.kostal.inverter import KostalInverter
 from libs.devices.sma.inverter import SmaInverter
-from libs.devices.sma.manager import SmaManager
+from libs.devices.sma.manager import SmaManagerConfig
+from libs.openhab.setup import OpenhabThing
 
 # Create the Openhab client
 openhab = OpenhabClient()
 
 # Create the SMA Manager
 openhab.install_addon(ADDON_SMA_ENERGY_METER)
-sma_manager = SmaManager(openhab=openhab)
-sma_manager.add_as_thing()
+config = SmaManagerConfig(openhab=openhab)
+sma_manager = OpenhabThing(SmaManagerConfig=config)
+sma_manager.createThing
 exit()
 
 # Create the Kostal inverter
