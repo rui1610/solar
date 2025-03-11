@@ -33,7 +33,7 @@ class SmaManager:
         )
         # result = self.exists_sma_manager_thing(self.openhab)
 
-        if exists is False:
+        if exists is None:
             # Build the data thing
             data = build_sma_manager_thing(self, name)
             # Create the data thing
