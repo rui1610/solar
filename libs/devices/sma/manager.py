@@ -22,7 +22,7 @@ class SmaManagerConfig(ThingConfig):
         location = config["SMA_MANAGER_LOCATION"]
         serial_number = config["SMA_MANAGER_SERIAL_NUMBER"]
 
-        self.thingTypeId = "smaenergymeter:energymeter"
+        self.thingTypeUid = "smaenergymeter:energymeter"
         self.thingType = "thingTypeUID"
         self.channels = []
         self.location = location
@@ -30,6 +30,7 @@ class SmaManagerConfig(ThingConfig):
         self.configuration = {"serialNumber": f"{serial_number}"}
         myuuid = os.urandom(5).hex()
         self.uid = f"smaenergymeter:energymeter:{myuuid}"
+        self.id = myuuid
 
 
 # @dataclasses.dataclass
