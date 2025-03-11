@@ -1,5 +1,29 @@
-from libs.devices.kostal.inverter import add_kostal_inverter_thing
-from libs.devices.sma.inverter import add_sma_inverter_thing
+from libs.openhab.generic import OpenhabClient
+from libs.constants.openhab import (
+    ADDON_ID_KOSTAL,
+    ADDON_ID_MODBUS,
+    ADDON_SMA_ENERGY_METER,
+)
+from libs.devices.kostal.inverter import KostalInverter
+from libs.devices.sma.inverter import SmaInverter
+from libs.devices.sma.manager import SmaManager
 
-add_kostal_inverter_thing()
-add_sma_inverter_thing(useAll=False)
+# Create the Openhab client
+openhab = OpenhabClient()
+
+# Create the SMA Manager
+openhab.install_addon(ADDON_SMA_ENERGY_METER)
+sma_manager = SmaManager(openhab=openhab)
+sma_manager.add_as_thing()
+exit()
+
+# Create the Kostal inverter
+openhab.install_addon(ADDON_ID_KOSTAL)
+kostal_inverter = KostalInverter(openhab=openhab)
+kostal_inverter.add_as_thing()
+
+
+# Create the SMA inverter
+openhab.install_addon(ADDON_ID_MODBUS)
+sma_inverter = SmaInverter(openhab=openhab)
+sma_inverter.add_as_thing(useAll=False)
