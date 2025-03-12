@@ -65,22 +65,26 @@ class OpenhabThing:
             data = {
                 "name": name,
                 "label": thing["label"],
-                "category": channel["category"],
-                "groupNames": thing["groupNames"],
-                "type": self.type,
-                "tags": self.tags,
+                "category": None,
+                "groupNames": None,
+                "type": channel["itemType"],
+                "tags": [],
             }
             data_response = self.openhab.put(type="item", data=data, id=name)
             item = data_response.json()
 
             itemName = item["name"]
 
+            id = self.thingConfig.id
+
             data_link = {
-                "channelUID": f"{item['UID']}:{id}",
+                "channelUID": id,
                 "configuration": {},
                 "itemName": itemName,
             }
 
+            channelUID = f"{channel['channelTypeUID']}:{channel['id']}"
             itemLink_response = self.openhab.put(
-                type="link", data=data_link, id=f"{itemName}/{item['UID']}:{id}"
+                type="link", data=data_link, id=f"{itemName}/{channelUID}"
             )
+            item_link = data_response.json()
