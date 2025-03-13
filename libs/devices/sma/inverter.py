@@ -1,12 +1,8 @@
-from libs.constants.files import FILE_CONFIG_SECRETS
-import os
-
 from dotenv import dotenv_values
-
-
-import dataclasses
-
+from libs.constants.files import FILE_CONFIG_SECRETS
 from libs.model.openhab import ThingConfig
+import os
+import dataclasses
 
 
 @dataclasses.dataclass
@@ -40,21 +36,6 @@ class SmaInverterModbusBridge(ThingConfig):
         self.thingTypeUid = "modbus:tcp"
         self.thingType = "thingTypeUID"
         self.location = location
-
-
-@dataclasses.dataclass
-class SmaInverterModbusPoller(ThingConfig):
-    thingTypeUid: str
-    thingType: str
-    id: str
-    uid: str
-    label: str
-    location: str
-    configuration: dict
-    channels: list
-
-    def __init__(self):
-        config = dotenv_values(FILE_CONFIG_SECRETS)
 
 
 # @dataclasses.dataclass

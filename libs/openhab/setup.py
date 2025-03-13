@@ -84,3 +84,25 @@ class OpenhabThing:
             }
 
             self.openhab.put(type="link", data=data_link, id=f"{itemName}/{channelUID}")
+
+    def createModbusItems(self, channelsToUse: list = None):
+        thing = self.thing
+
+        config_poller = {
+            "label": f"{thing.label} - Poller",
+            "bridgeUID": bridgeUID,
+            "configuration": {
+                "start": inverter.channel,
+                "length": inverter.length,
+                "refresh": 5000,
+                "maxTries": 3,
+                "cacheMillis": 50,
+                "type": "input",
+            },
+            "properties": {},
+            "thingTypeUID": "modbus:poller",
+            "location": sma_inverter.location,
+            "channels": [],
+            "statusInfo": {},
+            "firmwareStatus": {},
+        }
