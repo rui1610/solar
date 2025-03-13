@@ -86,4 +86,4 @@ class OpenhabThing:
             itemLink_response = self.openhab.put(
                 type="link", data=data_link, id=f"{itemName}/{channelUID}"
             )
-            item_link = itemLink_response.json()
+            # item_link = itemLink_response.json()
