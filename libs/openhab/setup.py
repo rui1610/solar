@@ -62,29 +62,28 @@ class OpenhabThing:
             all_channels = filteredChannels
 
         for channel in all_channels:
+            item_name = f"{thing['label']} - {channel['label']}"
+            id = cleanup_string(item_name)
             data = {
-                "name": name,
-                "label": thing["label"],
-                "category": None,
+                "category": "Energy",
                 "groupNames": None,
+                "label": item_name,
+                "name": id,
+                "tags": ["Point"],
                 "type": channel["itemType"],
-                "tags": [],
             }
-            data_response = self.openhab.put(type="item", data=data, id=name)
+            data_response = self.openhab.put(type="item", data=data, id=id)
             item = data_response.json()
 
             itemName = item["name"]
-
-            id = self.thingConfig.id
-
+            channelUID = f"{channel['uid']}"
             data_link = {
-                "channelUID": id,
+                "channelUID": channelUID,
                 "configuration": {},
                 "itemName": itemName,
             }
 
-            channelUID = f"{channel['channelTypeUID']}:{channel['id']}"
             itemLink_response = self.openhab.put(
                 type="link", data=data_link, id=f"{itemName}/{channelUID}"
             )
-            item_link = data_response.json()
+            item_link = itemLink_response.json()

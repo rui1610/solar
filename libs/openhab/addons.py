@@ -22,5 +22,6 @@ def cleanup_string(string: str) -> str:
     result = result.replace(":", " ")
     result = result.replace("  ", " ")
     result = result.replace(" ", "_")
+    result = result.replace("__", "_")
 
     return result
