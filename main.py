@@ -26,9 +26,9 @@ thing = OpenhabThing(openhab=openhab, thingConfig=SmaManagerConfig())
 sma_manager = thing.createThing()
 thing.createItemsFromChannels(channelsToUse=CHANNELS_SMA_MANAGER)
 
-exit()
 
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)
 thing = OpenhabThing(openhab=openhab, thingConfig=SmaInverterModbusBridge())
 sma_inverter_brigde = thing.createThing()
+thing.createItemsFromChannels()

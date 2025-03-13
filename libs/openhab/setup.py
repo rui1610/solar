@@ -14,6 +14,7 @@ class OpenhabThing:
     def __init__(self, openhab: OpenhabClient, thingConfig: ThingConfig):
         self.openhab = openhab
         self.thingConfig = thingConfig
+        self.items = []
 
     def exists(self):
         openhab = self.openhab
@@ -48,8 +49,6 @@ class OpenhabThing:
 
     def createItemsFromChannels(self, channelsToUse: list = None):
         thing = self.thing
-        name = cleanup_string(f"{thing['label']}")
-
         all_channels = self.thing["channels"]
 
         if channelsToUse is not None and len(channelsToUse) > 0:
@@ -74,6 +73,7 @@ class OpenhabThing:
             }
             data_response = self.openhab.put(type="item", data=data, id=id)
             item = data_response.json()
+            self.items.append(item)
 
             itemName = item["name"]
             channelUID = f"{channel['uid']}"
@@ -83,7 +83,4 @@ class OpenhabThing:
                 "itemName": itemName,
             }
 
-            itemLink_response = self.openhab.put(
-                type="link", data=data_link, id=f"{itemName}/{channelUID}"
-            )
-            # item_link = itemLink_response.json()
+            self.openhab.put(type="link", data=data_link, id=f"{itemName}/{channelUID}")
