@@ -1,8 +1,10 @@
 from dotenv import dotenv_values
-from libs.constants.files import FILE_CONFIG_SECRETS
+from libs.constants.files import FILE_CONFIG_SECRETS, FILE_CONFIG_SMA_METADATA
 from libs.model.openhab import ThingConfig
+from libs.constants.sma_inverter import CHANNELS_TO_USE
 import os
 import dataclasses
+import json
 
 
 @dataclasses.dataclass
@@ -30,12 +32,42 @@ class SmaInverterModbusBridge(ThingConfig):
         self.uid = f"modbus:tcp:{myuuid}"
         self.id = myuuid
         self.label = name + " - Modbus Bridge"
-        self.configuration = {"host": ip_address, "id": modbus_id, "port": modbus_port}
+        self.configuration = {
+            "host": ip_address,
+            "id": modbus_id,
+            "port": modbus_port,
+            "modbus_channel_config": get_modbus_things(),
+        }
 
         self.channels = []
         self.thingTypeUid = "modbus:tcp"
         self.thingType = "thingTypeUID"
         self.location = location
+
+
+def get_modbus_things(useAll: bool = False):
+    result = []
+    data = None
+    with open(FILE_CONFIG_SMA_METADATA, "r") as f:
+        data = json.load(f)
+
+    for thing in data:
+        # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
+        if thing["SMA Modbus Datentyp"] in ["U32", "S32", "U64", "S64", "U16", "S16"]:
+            result.append(thing)
+
+    # sort the result by the ["SMA Modbus Datentyp"]
+    result.sort(key=lambda x: x["SMA Modbus Datentyp"])
+
+    if useAll is True:
+        return result
+    else:
+        filtered_result = []
+        for channel in CHANNELS_TO_USE:
+            for item in result:
+                if channel["channel"] == item["SMA Modbus Registeradresse"]:
+                    filtered_result.append(item)
+        return filtered_result
 
 
 # @dataclasses.dataclass

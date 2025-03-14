@@ -10,6 +10,8 @@ class OpenhabThing:
     thingConfig: ThingConfig
     thing: dict
     items: list
+    modbus_poller: list
+    modbus_data: list
 
     def __init__(self, openhab: OpenhabClient, thingConfig: ThingConfig):
         self.openhab = openhab
@@ -87,22 +89,61 @@ class OpenhabThing:
 
     def createModbusItems(self, channelsToUse: list = None):
         thing = self.thing
+        openhab = self.openhab
 
-        config_poller = {
-            "label": f"{thing.label} - Poller",
-            "bridgeUID": bridgeUID,
-            "configuration": {
-                "start": inverter.channel,
-                "length": inverter.length,
-                "refresh": 5000,
-                "maxTries": 3,
-                "cacheMillis": 50,
-                "type": "input",
-            },
-            "properties": {},
-            "thingTypeUID": "modbus:poller",
-            "location": sma_inverter.location,
-            "channels": [],
-            "statusInfo": {},
-            "firmwareStatus": {},
-        }
+        start = thing["configuration"]["port"]
+        length = thing["configuration"]["id"]
+        maxTries = thing["configuration"]["connectMaxTries"]
+        location = thing["location"]
+        bridgeUID = thing["thingTypeUID"]
+
+        channelsToCreate = thing["configuration"]["modbus_channel_config"]
+
+        for channel in channelsToCreate:
+
+            valueType = channel[]
+
+            pollerLabel = f"{thing.label} - Poller"
+            dataLabel = f"{thing.label} - Data"
+
+            config_poller = {
+                "label": pollerLabel,
+                "bridgeUID": bridgeUID,
+                "configuration": {
+                    "start": start,
+                    "length": length,
+                    "refresh": 5000,
+                    "maxTries": 3,
+                    "cacheMillis": 50,
+                    "type": "input",
+                },
+                "properties": {},
+                "thingTypeUID": "modbus:poller",
+                "location": location,
+                "channels": [],
+                "statusInfo": {},
+                "firmwareStatus": {},
+            }
+
+            poller_response = openhab.post(type="thing", data=config_poller)
+            poller = poller_response.json()
+
+            pollerUID = poller["UID"]
+
+            config_data = {
+                "label": dataLabel,
+                "bridgeUID": bridgeUID,
+                "configuration": {
+                    "readValueType": inverter.valueType,
+                    "readTransform": "default",
+                    "writeTransform": "default",
+                    "readStart": str(start),
+                    "updateUnchangedValuesEveryMillis": 5000,
+                    "writeMaxTries": 3,
+                },
+                "properties": {},
+                "thingTypeUID": "modbus:data",
+                "location": "",
+                "statusInfo": {},
+                "firmwareStatus": {},
+            }
