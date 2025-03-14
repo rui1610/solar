@@ -24,4 +24,8 @@ def cleanup_string(string: str) -> str:
     result = result.replace(" ", "_")
     result = result.replace("__", "_")
 
+    # if the result start with a number, replace it with a random character
+    if result[0].isdigit():
+        result = f"a_{result}"
+
     return result

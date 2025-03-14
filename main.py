@@ -14,7 +14,6 @@ from libs.constants.sma_manager import CHANNELS_TO_USE as CHANNELS_SMA_MANAGER
 # Create the Openhab client
 openhab = OpenhabClient()
 
-
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)
 thing = OpenhabThing(openhab=openhab, thingConfig=SmaInverterModbusBridge())
