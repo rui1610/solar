@@ -54,6 +54,11 @@ def get_modbus_things(useAll: bool = False):
     for thing in data:
         # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
         if thing["SMA Modbus Datentyp"] in ["U32", "S32", "U64", "S64", "U16", "S16"]:
+            thing["length"], thing["valueType"] = getValueType(
+                thing["SMA Modbus Datentyp"]
+            )
+            thing["valueFactor"] = getFactor(thing["Schrittweite"])
+            thing["label"] = getLabelName(thing)
             result.append(thing)
 
     # sort the result by the ["SMA Modbus Datentyp"]
@@ -68,6 +73,46 @@ def get_modbus_things(useAll: bool = False):
                 if channel["channel"] == item["SMA Modbus Registeradresse"]:
                     filtered_result.append(item)
         return filtered_result
+
+
+def getLabelName(raw_data: str):
+    channelId = int(raw_data["SMA Modbus Registeradresse"])
+    device = "SMA Device"
+    name = raw_data["Name (SMA Speedwire)"]
+    # label = f"{device} {channelId} - {name}"
+    label = f"{channelId} - {name}"
+    return label
+
+
+def getValueType(rawValue: str):
+    match rawValue:
+        case "U64":
+            return 4, "uint64"
+        case "S64":
+            return 4, "int64"
+        case "U32":
+            return 2, "uint32"
+        case "S32":
+            return 2, "int32"
+        case "U16":
+            return 1, "uint16"
+        case "S16":
+            return 1, "int16"
+    return rawValue
+
+
+def getFactor(raw_data: str):
+    result = raw_data
+
+    try:
+        # replace all , with a .
+        result = result.replace(",", ".")
+        result = result.replace("-", "")
+        result = float(result)
+    except Exception:
+        result = 1
+
+    return result
 
 
 # @dataclasses.dataclass
