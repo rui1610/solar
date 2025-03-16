@@ -1,3 +1,4 @@
+from libs.model.openhab import ThingConfig
 from libs.constants.files import FILE_CONFIG_SECRETS
 from dotenv import dotenv_values
 import dataclasses
@@ -20,9 +21,6 @@ CHANNELS_TO_USE = [
 ]
 
 
-from libs.model.openhab import ThingConfig
-
-
 @dataclasses.dataclass
 class KostalInverter(ThingConfig):
     thingTypeUid: str
@@ -31,7 +29,8 @@ class KostalInverter(ThingConfig):
     uid: str
     label: str
     location: str
-    configuration: dict
+    configuration_complete: dict
+    configuration_for_setup: dict
     channels: list
 
     def __init__(self):
@@ -47,7 +46,7 @@ class KostalInverter(ThingConfig):
         self.uid = f"kostalinverter:piko1020:{myuuid}"
         self.id = myuuid
         self.label = name
-        self.configuration = {
+        self.configuration_for_setup = {
             "url": f"http://{ip}",
             "username": user,
             "password": password,

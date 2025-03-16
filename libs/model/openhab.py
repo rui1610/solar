@@ -9,7 +9,9 @@ class ThingConfig:
     uid: str
     label: str
     location: str
-    configuration: dict
+    configuration_complete: dict
+    configuration_for_setup: dict
+
     channels: list
 
 

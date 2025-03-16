@@ -35,15 +35,10 @@ class OpenhabThing:
         )
 
         if checkIfExists is None:
-            thisConfiguration = {
-                "host": config.configuration["host"],
-                "id": config.configuration["id"],
-                "port": config.configuration["port"],
-            }
             data = {
                 "UID": config.uid,
                 "label": config.label,
-                "configuration": thisConfiguration,
+                "configuration": config.configuration_for_setup,
                 "channels": config.channels,
                 "thingTypeUID": config.thingTypeUid,
                 "ID": config.id,
@@ -103,81 +98,153 @@ class OpenhabThing:
         location = thing["location"]
         bridgeUID = thing["UID"]
 
-        channelsToCreate = thingConfig.configuration["modbus_channel_config"]
+        channelsToCreate = thingConfig.configuration_complete["modbus_channel_config"]
 
         for channel in channelsToCreate:
             valueType = channel["valueType"]
 
             pollerLabel = f"{thingConfig.label} - Poller"
             dataLabel = f"{thingConfig.label} - Data"
-            itemLabel = f"{channel['label']}"
+            itemLabel = f"{thingConfig.label} - {channel['label']}"
 
-            config_poller = {
-                "label": pollerLabel,
-                "bridgeUID": bridgeUID,
-                "configuration": {
-                    "start": start,
-                    "length": length,
-                    "refresh": 5000,
-                    "maxTries": maxTries,
-                    "cacheMillis": 50,
-                    "type": "input",
-                },
-                "properties": {},
-                "thingTypeUID": "modbus:poller",
-                "location": location,
-                "channels": [],
-                "statusInfo": {},
-                "firmwareStatus": {},
-            }
+            modbus_poller = create_modbus_poller(
+                openhab=openhab,
+                label=pollerLabel,
+                uid=bridgeUID,
+                start=start,
+                length=length,
+                maxTries=maxTries,
+                location=location,
+            )
 
-            modbus_poller_response = openhab.post(type="thing", data=config_poller)
-            modbus_poller = modbus_poller_response.json()
+            modbus_data = create_modbus_data(
+                openhab=openhab,
+                label=dataLabel,
+                uid=modbus_poller["UID"],
+                valueType=valueType,
+                start=start,
+                maxTries=maxTries,
+            )
 
-            pollerUID = modbus_poller["UID"]
-
-            modbus_config_data = {
-                "label": dataLabel,
-                "bridgeUID": pollerUID,
-                "configuration": {
-                    "readValueType": valueType,
-                    "readTransform": "default",
-                    "writeTransform": "default",
-                    "readStart": str(start),
-                    "updateUnchangedValuesEveryMillis": 5000,
-                    "writeMaxTries": maxTries,
-                },
-                "properties": {},
-                "thingTypeUID": "modbus:data",
-                "location": "",
-                "statusInfo": {},
-                "firmwareStatus": {},
-            }
-            modbus_data_response = openhab.post(type="thing", data=modbus_config_data)
-            modbus_data = modbus_data_response.json()
-
-            id = cleanup_string(itemLabel)
-            item_data = {
-                "category": "energy",
-                "groupNames": [],
-                "label": itemLabel,
-                "name": id,
-                "tags": ["Point"],
-                "type": "Number",
-            }
-            data_response = self.openhab.put(type="item", data=item_data, id=id)
-            item = data_response.json()
+            item = create_modbus_item(
+                openhab=openhab, label=itemLabel, uidModbusData=modbus_data["UID"]
+            )
             self.items.append(item)
 
-            itemName = item["name"]
-            modbus_data_UID = f"{modbus_data['UID']}"
-            data_link = {
-                "channelUID": f"{modbus_data_UID}:number",
-                "configuration": {},
-                "itemName": itemName,
-            }
 
-            self.openhab.put(
-                type="link", data=data_link, id=f"{itemName}/{modbus_data_UID}:number"
-            )
-            item_data = item_data
+def create_modbus_poller(
+    openhab: OpenhabClient,
+    label: str,
+    uid: str,
+    start: str,
+    length: str,
+    maxTries: str,
+    location: str,
+):
+    config_poller = {
+        "label": label,
+        "bridgeUID": uid,
+        "configuration": {
+            "start": start,
+            "length": length,
+            "refresh": 5000,
+            "maxTries": maxTries,
+            "cacheMillis": 50,
+            "type": "input",
+        },
+        "properties": {},
+        "thingTypeUID": "modbus:poller",
+        "location": location,
+        "channels": [],
+        "statusInfo": {},
+        "firmwareStatus": {},
+    }
+
+    modbus_poller = openhab.object_exists(
+        objectType="thing",
+        checkType="label",
+        checkText=label,
+    )
+
+    if modbus_poller is None:
+        modbus_poller_response = openhab.post(type="thing", data=config_poller)
+        modbus_poller = modbus_poller_response.json()
+
+    return modbus_poller
+
+
+def create_modbus_data(
+    openhab: OpenhabClient,
+    label: str,
+    uid: str,
+    valueType: str,
+    start: str,
+    maxTries: str,
+):
+    modbus_config_data = {
+        "label": label,
+        "bridgeUID": uid,
+        "configuration": {
+            "readValueType": valueType,
+            "readTransform": "default",
+            "writeTransform": "default",
+            "readStart": str(start),
+            "updateUnchangedValuesEveryMillis": 5000,
+            "writeMaxTries": maxTries,
+        },
+        "properties": {},
+        "thingTypeUID": "modbus:data",
+        "location": "",
+        "statusInfo": {},
+        "firmwareStatus": {},
+    }
+
+    modbus_data = openhab.object_exists(
+        objectType="thing",
+        checkType="label",
+        checkText=label,
+    )
+
+    if modbus_data is None:
+        modbus_data_response = openhab.post(type="thing", data=modbus_config_data)
+        modbus_data = modbus_data_response.json()
+
+    return modbus_data
+
+
+def create_modbus_item(openhab: OpenhabClient, label: str, uidModbusData: str):
+    id = cleanup_string(label)
+
+    item_data = {
+        "category": "energy",
+        "groupNames": [],
+        "label": label,
+        "name": id,
+        "tags": ["Point"],
+        "type": "Number",
+    }
+
+    modbus_item = openhab.object_exists(
+        objectType="thing",
+        checkType="label",
+        checkText=label,
+    )
+
+    if modbus_item is None:
+        data_response = openhab.put(type="item", data=item_data, id=id)
+        modbus_item = data_response.json()
+
+        itemName = modbus_item["name"]
+        modbus_data_UID = uidModbusData
+        data_link = {
+            "channelUID": f"{modbus_data_UID}:number",
+            "configuration": {},
+            "itemName": itemName,
+        }
+
+        openhab.put(
+            type="link", data=data_link, id=f"{itemName}/{modbus_data_UID}:number"
+        )
+        item_data = item_data
+
+    return modbus_item

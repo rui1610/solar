@@ -13,7 +13,8 @@ class SmaManagerConfig(ThingConfig):
     uid: str
     label: str
     location: str
-    configuration: dict
+    configuration_complete: dict
+    configuration_for_setup: dict
     channels: list
 
     def __init__(self):
@@ -27,7 +28,7 @@ class SmaManagerConfig(ThingConfig):
         self.channels = []
         self.location = location
         self.label = label
-        self.configuration = {"serialNumber": f"{serial_number}"}
+        self.configuration_for_setup = {"serialNumber": f"{serial_number}"}
         myuuid = os.urandom(5).hex()
         self.uid = f"smaenergymeter:energymeter:{myuuid}"
         self.id = myuuid

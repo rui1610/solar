@@ -15,7 +15,8 @@ class SmaInverterModbusBridge(ThingConfig):
     uid: str
     label: str
     location: str
-    configuration: dict
+    configuration_complete: dict
+    configuration_for_setup: dict
     channels: list
 
     def __init__(self):
@@ -32,11 +33,16 @@ class SmaInverterModbusBridge(ThingConfig):
         self.uid = f"modbus:tcp:{myuuid}"
         self.id = myuuid
         self.label = name + " - Modbus Bridge"
-        self.configuration = {
+        self.configuration_complete = {
             "host": ip_address,
             "id": modbus_id,
             "port": modbus_port,
             "modbus_channel_config": get_modbus_things(),
+        }
+        self.configuration_for_setup = {
+            "host": ip_address,
+            "id": modbus_id,
+            "port": modbus_port,
         }
 
         self.channels = []
