@@ -92,8 +92,8 @@ class OpenhabThing:
         openhab = self.openhab
         thingConfig = self.thingConfig
 
-        start = thing["configuration"]["port"]
-        length = thing["configuration"]["id"]
+        # start = thing["configuration"]["port"]
+        # length = thing["configuration"]["id"]
         maxTries = thing["configuration"]["connectMaxTries"]
         location = thing["location"]
         bridgeUID = thing["UID"]
@@ -103,9 +103,12 @@ class OpenhabThing:
         for channel in channelsToCreate:
             valueType = channel["valueType"]
 
-            pollerLabel = f"{thingConfig.label} - Poller"
-            dataLabel = f"{thingConfig.label} - Data"
+            pollerLabel = f"{thingConfig.label} - Poller - {channel['label']}"
+            dataLabel = f"{thingConfig.label} - Data - {channel['label']}"
             itemLabel = f"{thingConfig.label} - {channel['label']}"
+
+            start = channel["SMA Modbus Registeradresse"]
+            length = channel["length"]
 
             modbus_poller = create_modbus_poller(
                 openhab=openhab,

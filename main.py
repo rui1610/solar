@@ -3,6 +3,8 @@ from libs.constants.openhab import (
     ADDON_ID_KOSTAL,
     ADDON_ID_MODBUS,
     ADDON_SMA_ENERGY_METER,
+    ADDON_JAVASCRIPTING,
+    ADDON_JAVASCRIPTING_NASHORN,
 )
 from libs.devices.kostal.inverter import KostalInverter
 from libs.devices.sma.inverter import SmaInverterModbusBridge
@@ -14,6 +16,8 @@ from libs.constants.sma_manager import CHANNELS_TO_USE as CHANNELS_SMA_MANAGER
 # Create the Openhab client
 openhab = OpenhabClient()
 
+openhab.install_addon(ADDON_JAVASCRIPTING)
+openhab.install_addon(ADDON_JAVASCRIPTING_NASHORN)
 
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)

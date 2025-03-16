@@ -6,6 +6,8 @@ import os
 import dataclasses
 import json
 
+# https://hoerli.net/openhab-sma-wechselrichter-via-modbus-anbinden/
+
 
 @dataclasses.dataclass
 class SmaInverterModbusBridge(ThingConfig):
