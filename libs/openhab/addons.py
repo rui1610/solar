@@ -22,6 +22,8 @@ def cleanup_string(string: str) -> str:
     result = result.replace(":", " ")
     result = result.replace("  ", " ")
     result = result.replace(" ", "_")
+    result = result.replace("(", "_")
+    result = result.replace(")", "_")
     result = result.replace("__", "_")
 
     # if the result start with a number, replace it with a random character
