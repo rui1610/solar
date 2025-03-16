@@ -130,7 +130,10 @@ class OpenhabThing:
             )
 
             item = create_modbus_item(
-                openhab=openhab, label=itemLabel, uidModbusData=modbus_data["UID"]
+                openhab=openhab,
+                thingConfig=self.thingConfig,
+                channel=channel,
+                uidModbusData=modbus_data["UID"],
             )
             self.items.append(item)
 
@@ -215,7 +218,12 @@ def create_modbus_data(
     return modbus_data
 
 
-def create_modbus_item(openhab: OpenhabClient, label: str, uidModbusData: str):
+def create_modbus_item(
+    openhab: OpenhabClient, thingConfig: ThingConfig, channel: dict, uidModbusData: str
+):
+    channel_address = channel["SMA Modbus Registeradresse"]
+
+    label = f"{thingConfig.label_name} - {channel['Name (SMA Speedwire)']} ({channel_address})"
     id = cleanup_string(label)
 
     item_data = {

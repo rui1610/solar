@@ -8,6 +8,7 @@ class ThingConfig:
     id: str
     uid: str
     label: str
+    label_type: str
     location: str
     configuration_complete: dict
     configuration_for_setup: dict

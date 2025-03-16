@@ -16,6 +16,9 @@ class SmaInverterModbusBridge(ThingConfig):
     id: str
     uid: str
     label: str
+    label_name: str
+    label_type: str
+    label_item: str
     location: str
     configuration_complete: dict
     configuration_for_setup: dict
@@ -34,7 +37,10 @@ class SmaInverterModbusBridge(ThingConfig):
         myuuid = os.urandom(5).hex()
         self.uid = f"modbus:tcp:{myuuid}"
         self.id = myuuid
-        self.label = name + " - Modbus Bridge"
+        self.label_item = "Modbus Bridge"
+        self.label_type = "Inverter"
+        self.label_name = name
+        self.label = f"{self.label_name} - {self.label_type} - {self.label_item}"
         self.configuration_complete = {
             "host": ip_address,
             "id": modbus_id,
