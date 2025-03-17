@@ -10,6 +10,21 @@ import json
 
 
 @dataclasses.dataclass
+class SmaModbusMeasurement:
+    channel: str
+    name: str
+    measurement: str
+    transformation: str
+    unit: str
+
+
+@dataclasses.dataclass
+class SmaModbusMeasurements:
+    device_name: str
+    measurements: list[SmaModbusMeasurement]
+
+
+@dataclasses.dataclass
 class SmaInverterModbusBridge(ThingConfig):
     thingTypeUid: str
     thingType: str
@@ -61,7 +76,7 @@ class SmaInverterModbusBridge(ThingConfig):
 
 def get_modbus_things(useAll: bool = False):
     result = []
-    data = None
+    devices = None
     with open(FILE_CONFIG_SMA_METADATA, "r") as f:
         data = json.load(f)
 
