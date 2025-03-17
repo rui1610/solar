@@ -5,7 +5,7 @@ CHANNELS_TO_USE = [
             {
                 "address": "30849",
                 "name": "Temperatur",
-                "transformation": "JS( | parseFloat(inputData) / 100 )",
+                "transformation": "JS( | input / 10 )",
                 "unit": "C",
             },
             {
