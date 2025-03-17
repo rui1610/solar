@@ -87,6 +87,13 @@ CHANNELS_TO_USE = [
                 "unit": "%.1f kWh",
                 "category": "energy",
             },
+            {
+                "address": "30517",
+                "name": "Tagesertrag gesamt",
+                "transformation": "JS( | parseFloat(input) / 1000 )",
+                "unit": "%.1f kWh",
+                "category": "energy",
+            },
         ],
     },
     {
