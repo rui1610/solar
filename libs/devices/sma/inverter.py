@@ -17,6 +17,7 @@ class SmaModbusMeasurement:
     valueType: str
     name: str
     transformation: str
+    category: str
     unit: str
 
     def __init__(self, raw_modbusData: dict, raw_config: dict, device_info: str):
@@ -25,6 +26,7 @@ class SmaModbusMeasurement:
         self.name = raw_config["name"]
         self.transformation = raw_config.get("transformation")
         self.device_name = device_info
+        self.category = raw_config.get("category")
 
         for thing in raw_modbusData:
             if thing["SMA Modbus Registeradresse"] == self.address:
@@ -108,15 +110,6 @@ def get_modbus_things(useAll: bool = False) -> list[SmaModbusMeasurement]:
             modbusMeasurements.append(thisMeasurement)
 
     return modbusMeasurements
-
-
-# def getLabelName(raw_data: str):
-#     channelId = int(raw_data["SMA Modbus Registeradresse"])
-#     device = "SMA Device"
-#     name = raw_data["Name (SMA Speedwire)"]
-#     # label = f"{device} {channelId} - {name}"
-#     label = f"{channelId} - {name}"
-#     return label
 
 
 def getValueType(rawValue: str):

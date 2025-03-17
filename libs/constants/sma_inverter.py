@@ -78,12 +78,13 @@ CHANNELS_TO_USE = [
         ],
     },
     {
-        "deviceName": "Solar2",
+        "deviceName": "Solaranlage",
         "measurements": [
             {
                 "address": "30529",
                 "name": "Ertrag gesamt",
-                "unit": "%.1f Wh",
+                "transformation": "JS( | parseFloat(input) / 1000 )",
+                "unit": "%.1f kWh",
                 "category": "energy",
             },
         ],
