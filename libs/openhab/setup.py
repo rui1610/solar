@@ -65,8 +65,11 @@ class OpenhabThing:
         for channel in all_channels:
             item_name = f"{thing['label']} - {channel['label']}"
             id = cleanup_string(item_name)
+            category = "energy"
+            if channel.category is not None:
+                category = channel.category
             data = {
-                "category": "energy",
+                "category": category,
                 "groupNames": None,
                 "label": item_name,
                 "name": id,
