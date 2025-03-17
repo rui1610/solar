@@ -103,9 +103,13 @@ class OpenhabThing:
         for channel in channelsToCreate:
             valueType = channel.valueType
 
-            pollerLabel = f"{thingConfig.label} - Poller - {channel.name}"
-            dataLabel = f"{thingConfig.label} - Data - {channel.name}"
-            itemLabel = f"{thingConfig.label} - {channel.name}"
+            pollerLabel = (
+                f"{thingConfig.label} - Poller - {channel.device_name} - {channel.name}"
+            )
+            dataLabel = (
+                f"{thingConfig.label} - Data - {channel.device_name} - {channel.name}"
+            )
+            # itemLabel = f"{thingConfig.label} - {channel.name}"
 
             start = channel.address
             length = channel.length
@@ -228,7 +232,7 @@ def create_modbus_item(
 ):
     channel_address = channel.address
 
-    label = f"{thingConfig.label_name} - {channel.name} ({channel_address})"
+    label = f"{thingConfig.label_name} - {channel.device_name} - {channel.name} ({channel_address})"
     id = cleanup_string(label)
 
     item_data = {
@@ -238,6 +242,7 @@ def create_modbus_item(
         "name": id,
         "tags": ["Point"],
         "type": "Number",
+        "unit": channel.unit,
     }
 
     modbus_item = openhab.object_exists(
@@ -262,5 +267,15 @@ def create_modbus_item(
             type="link", data=data_link, id=f"{itemName}/{modbus_data_UID}:number"
         )
         item_data = item_data
+
+        # add unit to value
+        if channel.unit is not None:
+            category_state = {"value": " ", "config": {"pattern": f"{channel.unit}"}}
+            category = openhab.put(
+                "item",
+                data=category_state,
+                id=id,
+                additions="metadata/stateDescription",
+            )
 
     return modbus_item
