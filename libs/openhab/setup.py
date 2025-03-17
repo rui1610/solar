@@ -66,8 +66,6 @@ class OpenhabThing:
             item_name = f"{thing['label']} - {channel['label']}"
             id = cleanup_string(item_name)
             category = "energy"
-            if channel.category is not None:
-                category = channel.category
             data = {
                 "category": category,
                 "groupNames": None,
