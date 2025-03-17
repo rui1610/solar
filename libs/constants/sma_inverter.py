@@ -19,16 +19,6 @@ CHANNELS_TO_USE = [
                 "name": "Ladezustand aktuell",
                 "unit": "%d%%",
             },
-            # {
-            #     "address": "31401",
-            #     "name": "Entladung gesamt",
-            #     "unit": "%.1f W",
-            # },
-            # {
-            #     "address": "31397",
-            #     "name": "Ladung gesamt",
-            #     "unit": "%.1f W",
-            # },
             {
                 "address": "31395",
                 "name": "Entladung aktuell",
