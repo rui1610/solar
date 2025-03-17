@@ -101,14 +101,14 @@ class OpenhabThing:
         channelsToCreate = thingConfig.configuration_complete["modbus_channel_config"]
 
         for channel in channelsToCreate:
-            valueType = channel["valueType"]
+            valueType = channel.valueType
 
-            pollerLabel = f"{thingConfig.label} - Poller - {channel['label']}"
-            dataLabel = f"{thingConfig.label} - Data - {channel['label']}"
-            itemLabel = f"{thingConfig.label} - {channel['label']}"
+            pollerLabel = f"{thingConfig.label} - Poller - {channel.name}"
+            dataLabel = f"{thingConfig.label} - Data - {channel.name}"
+            itemLabel = f"{thingConfig.label} - {channel.name}"
 
-            start = channel["SMA Modbus Registeradresse"]
-            length = channel["length"]
+            start = channel.address
+            length = channel.length
 
             modbus_poller = create_modbus_poller(
                 openhab=openhab,
@@ -127,6 +127,7 @@ class OpenhabThing:
                 valueType=valueType,
                 start=start,
                 maxTries=maxTries,
+                transformation=channel.transformation,
             )
 
             item = create_modbus_item(
@@ -186,13 +187,17 @@ def create_modbus_data(
     valueType: str,
     start: str,
     maxTries: str,
+    transformation: str,
 ):
+    if transformation is None:
+        transformation = "default"
+
     modbus_config_data = {
         "label": label,
         "bridgeUID": uid,
         "configuration": {
             "readValueType": valueType,
-            "readTransform": "default",
+            "readTransform": transformation,
             "writeTransform": "default",
             "readStart": str(start),
             "updateUnchangedValuesEveryMillis": 5000,
@@ -221,9 +226,9 @@ def create_modbus_data(
 def create_modbus_item(
     openhab: OpenhabClient, thingConfig: ThingConfig, channel: dict, uidModbusData: str
 ):
-    channel_address = channel["SMA Modbus Registeradresse"]
+    channel_address = channel.address
 
-    label = f"{thingConfig.label_name} - {channel['Name (SMA Speedwire)']} ({channel_address})"
+    label = f"{thingConfig.label_name} - {channel.name} ({channel_address})"
     id = cleanup_string(label)
 
     item_data = {

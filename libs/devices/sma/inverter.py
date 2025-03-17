@@ -11,17 +11,35 @@ import json
 
 @dataclasses.dataclass
 class SmaModbusMeasurement:
-    channel: str
+    device_name: str
+    address: str
+    length: int
+    valueType: str
     name: str
-    measurement: str
     transformation: str
     unit: str
 
+    def __init__(self, raw_modbusData: dict, raw_config: dict, device_info: str):
+        self.address = raw_config["address"]
+        self.unit = raw_config["unit"]
+        self.name = raw_config["name"]
+        self.transformation = raw_config.get("transformation")
+        self.device_name = device_info
 
-@dataclasses.dataclass
-class SmaModbusMeasurements:
-    device_name: str
-    measurements: list[SmaModbusMeasurement]
+        for thing in raw_modbusData:
+            if thing["SMA Modbus Registeradresse"] == self.address:
+                # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
+                if thing["SMA Modbus Datentyp"] in [
+                    "U32",
+                    "S32",
+                    "U64",
+                    "S64",
+                    "U16",
+                    "S16",
+                ]:
+                    self.length, self.valueType = getValueType(
+                        thing["SMA Modbus Datentyp"]
+                    )
 
 
 @dataclasses.dataclass
@@ -74,43 +92,31 @@ class SmaInverterModbusBridge(ThingConfig):
         self.location = location
 
 
-def get_modbus_things(useAll: bool = False):
-    result = []
-    devices = None
+def get_modbus_things(useAll: bool = False) -> list[SmaModbusMeasurement]:
+    allModbusData = None
     with open(FILE_CONFIG_SMA_METADATA, "r") as f:
-        data = json.load(f)
+        allModbusData = json.load(f)
 
-    for thing in data:
-        # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
-        if thing["SMA Modbus Datentyp"] in ["U32", "S32", "U64", "S64", "U16", "S16"]:
-            thing["length"], thing["valueType"] = getValueType(
-                thing["SMA Modbus Datentyp"]
+    modbusMeasurements = []
+    for device in CHANNELS_TO_USE:
+        for measurement in device["measurements"]:
+            thisMeasurement = SmaModbusMeasurement(
+                raw_modbusData=allModbusData,
+                raw_config=measurement,
+                device_info=device["deviceName"],
             )
-            thing["valueFactor"] = getFactor(thing["Schrittweite"])
-            thing["label"] = getLabelName(thing)
-            result.append(thing)
+            modbusMeasurements.append(thisMeasurement)
 
-    # sort the result by the ["SMA Modbus Datentyp"]
-    result.sort(key=lambda x: x["SMA Modbus Datentyp"])
-
-    if useAll is True:
-        return result
-    else:
-        filtered_result = []
-        for channel in CHANNELS_TO_USE:
-            for item in result:
-                if channel["channel"] == item["SMA Modbus Registeradresse"]:
-                    filtered_result.append(item)
-        return filtered_result
+    return modbusMeasurements
 
 
-def getLabelName(raw_data: str):
-    channelId = int(raw_data["SMA Modbus Registeradresse"])
-    device = "SMA Device"
-    name = raw_data["Name (SMA Speedwire)"]
-    # label = f"{device} {channelId} - {name}"
-    label = f"{channelId} - {name}"
-    return label
+# def getLabelName(raw_data: str):
+#     channelId = int(raw_data["SMA Modbus Registeradresse"])
+#     device = "SMA Device"
+#     name = raw_data["Name (SMA Speedwire)"]
+#     # label = f"{device} {channelId} - {name}"
+#     label = f"{channelId} - {name}"
+#     return label
 
 
 def getValueType(rawValue: str):
