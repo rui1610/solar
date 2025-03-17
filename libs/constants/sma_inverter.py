@@ -12,13 +12,13 @@ CHANNELS_TO_USE = [
             {
                 "address": "30847",
                 "name": "Kapazität aktuell",
-                "unit": "%.1f %%",
+                "unit": "%d%%",
                 "category": "percent",
             },
             {
                 "address": "30845",
                 "name": "Ladezustand aktuell",
-                "unit": "%.1f %%",
+                "unit": "%d%%",
             },
             # {
             #     "address": "31401",
