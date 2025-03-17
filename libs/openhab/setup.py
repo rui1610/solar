@@ -65,8 +65,9 @@ class OpenhabThing:
         for channel in all_channels:
             item_name = f"{thing['label']} - {channel['label']}"
             id = cleanup_string(item_name)
+            category = "energy"
             data = {
-                "category": "energy",
+                "category": category,
                 "groupNames": None,
                 "label": item_name,
                 "name": id,
@@ -101,14 +102,18 @@ class OpenhabThing:
         channelsToCreate = thingConfig.configuration_complete["modbus_channel_config"]
 
         for channel in channelsToCreate:
-            valueType = channel["valueType"]
+            valueType = channel.valueType
 
-            pollerLabel = f"{thingConfig.label} - Poller - {channel['label']}"
-            dataLabel = f"{thingConfig.label} - Data - {channel['label']}"
-            itemLabel = f"{thingConfig.label} - {channel['label']}"
+            pollerLabel = (
+                f"{thingConfig.label} - Poller - {channel.device_name} - {channel.name}"
+            )
+            dataLabel = (
+                f"{thingConfig.label} - Data - {channel.device_name} - {channel.name}"
+            )
+            # itemLabel = f"{thingConfig.label} - {channel.name}"
 
-            start = channel["SMA Modbus Registeradresse"]
-            length = channel["length"]
+            start = channel.address
+            length = channel.length
 
             modbus_poller = create_modbus_poller(
                 openhab=openhab,
@@ -127,6 +132,7 @@ class OpenhabThing:
                 valueType=valueType,
                 start=start,
                 maxTries=maxTries,
+                transformation=channel.transformation,
             )
 
             item = create_modbus_item(
@@ -186,13 +192,17 @@ def create_modbus_data(
     valueType: str,
     start: str,
     maxTries: str,
+    transformation: str,
 ):
+    if transformation is None:
+        transformation = "default"
+
     modbus_config_data = {
         "label": label,
         "bridgeUID": uid,
         "configuration": {
             "readValueType": valueType,
-            "readTransform": "default",
+            "readTransform": transformation,
             "writeTransform": "default",
             "readStart": str(start),
             "updateUnchangedValuesEveryMillis": 5000,
@@ -221,9 +231,9 @@ def create_modbus_data(
 def create_modbus_item(
     openhab: OpenhabClient, thingConfig: ThingConfig, channel: dict, uidModbusData: str
 ):
-    channel_address = channel["SMA Modbus Registeradresse"]
+    channel_address = channel.address
 
-    label = f"{thingConfig.label_name} - {channel['Name (SMA Speedwire)']} ({channel_address})"
+    label = f"{thingConfig.label_name} - {channel.device_name} - {channel.name} ({channel_address})"
     id = cleanup_string(label)
 
     item_data = {
@@ -233,6 +243,7 @@ def create_modbus_item(
         "name": id,
         "tags": ["Point"],
         "type": "Number",
+        "unit": channel.unit,
     }
 
     modbus_item = openhab.object_exists(
@@ -257,5 +268,15 @@ def create_modbus_item(
             type="link", data=data_link, id=f"{itemName}/{modbus_data_UID}:number"
         )
         item_data = item_data
+
+        # add unit to value
+        if channel.unit is not None:
+            category_state = {"value": " ", "config": {"pattern": f"{channel.unit}"}}
+            category = openhab.put(
+                "item",
+                data=category_state,
+                id=id,
+                additions="metadata/stateDescription",
+            )
 
     return modbus_item

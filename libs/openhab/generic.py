@@ -74,7 +74,7 @@ class OpenhabClient:
             print(err)
             sys.exit(1)
 
-    def put(self, type: str, id: str, data: dict):
+    def put(self, type: str, id: str, data: dict, additions: str = None):
         # Add a delay for not getting into any throteling issues
         time.sleep(SLEEP_TIME_SECONDS_WRITE)
 
@@ -90,6 +90,9 @@ class OpenhabClient:
             url = f"{base_url}/{type}s/{id}"
         else:
             url = f"{base_url}/{type}s"
+
+        if additions is not None:
+            url = f"{url}/{additions}"
 
         # convert data to a string
         data = json.dumps(data)

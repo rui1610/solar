@@ -10,8 +10,8 @@ from libs.devices.kostal.inverter import KostalInverter
 from libs.devices.sma.inverter import SmaInverterModbusBridge
 from libs.devices.sma.manager import SmaManagerConfig
 from libs.openhab.setup import OpenhabThing
-from libs.constants.kostal_inverter import CHANNELS_TO_USE
-from libs.constants.sma_manager import CHANNELS_TO_USE
+from libs.constants.kostal_inverter import CHANNELS_TO_USE as CHANNELS_KOSTAL
+from libs.constants.sma_manager import CHANNELS_TO_USE as CHANNELS_SMA_MANAGER
 
 # Create the Openhab client
 openhab = OpenhabClient()
@@ -19,22 +19,22 @@ openhab = OpenhabClient()
 openhab.install_addon(ADDON_JAVASCRIPTING)
 openhab.install_addon(ADDON_JAVASCRIPTING_NASHORN)
 
+# Create the Kostal inverter
+openhab.install_addon(ADDON_ID_KOSTAL)
+thing = OpenhabThing(openhab=openhab, thingConfig=KostalInverter())
+thing.createThing()
+thing.createItemsFromChannels(channelsToUse=CHANNELS_KOSTAL)
+
+
 # Create the SMA inverter
 openhab.install_addon(ADDON_ID_MODBUS)
 thing = OpenhabThing(openhab=openhab, thingConfig=SmaInverterModbusBridge())
 sma_inverter_brigde = thing.createThing()
 thing.createModbusItems()
 
-
-# Create the Kostal inverter
-openhab.install_addon(ADDON_ID_KOSTAL)
-thing = OpenhabThing(openhab=openhab, thingConfig=KostalInverter())
-thing.createThing()
-thing.createItemsFromChannels(channelsToUse=CHANNELS_TO_USE)
-
 # Create the SMA Manager
 openhab.install_addon(ADDON_SMA_ENERGY_METER)
 thing = OpenhabThing(openhab=openhab, thingConfig=SmaManagerConfig())
 sma_manager = thing.createThing()
-thing.createItemsFromChannels(channelsToUse=CHANNELS_TO_USE)
+thing.createItemsFromChannels(channelsToUse=CHANNELS_SMA_MANAGER)
 # thing.createItemsFromChannels()
