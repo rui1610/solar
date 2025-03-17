@@ -103,6 +103,7 @@ CHANNELS_TO_USE = [
                 "address": "30953",
                 "name": "Temperatur",
                 "unit": "%.1f °C",
+                "transformation": "JS( | parseFloat(input) / 10 )",
                 "category": "temperature",
             },
         ],
