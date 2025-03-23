@@ -26,7 +26,6 @@ thing = OpenhabThing(openhab=openhab, thingConfig=SmaInverterModbusBridge())
 sma_inverter_brigde = thing.createThing()
 thing.createModbusItems()
 
-exit()
 
 # Create the Kostal inverter
 openhab.install_addon(ADDON_ID_KOSTAL)
