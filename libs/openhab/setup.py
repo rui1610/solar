@@ -2,6 +2,7 @@ import dataclasses
 from libs.openhab.generic import OpenhabClient
 from libs.model.openhab import ThingConfig
 from libs.openhab.addons import cleanup_string
+from libs.devices.sma.inverter import SmaModbusMeasurement
 
 
 @dataclasses.dataclass
@@ -66,6 +67,8 @@ class OpenhabThing:
             item_name = f"{thing['label']} - {channel['label']}"
             id = cleanup_string(item_name)
             category = "energy"
+            if channel.get("category") is not None:
+                category = channel["category"]
             data = {
                 "category": category,
                 "groupNames": None,
@@ -229,15 +232,23 @@ def create_modbus_data(
 
 
 def create_modbus_item(
-    openhab: OpenhabClient, thingConfig: ThingConfig, channel: dict, uidModbusData: str
+    openhab: OpenhabClient,
+    thingConfig: ThingConfig,
+    channel: SmaModbusMeasurement,
+    uidModbusData: str,
 ):
     channel_address = channel.address
 
     label = f"{thingConfig.label_name} - {channel.device_name} - {channel.name} ({channel_address})"
     id = cleanup_string(label)
+    category = channel.category
+    if category is None:
+        category = "energy"
+    else:
+        category = category
 
     item_data = {
-        "category": "energy",
+        "category": category,
         "groupNames": [],
         "label": label,
         "name": id,
