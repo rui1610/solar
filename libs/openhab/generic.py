@@ -7,9 +7,9 @@ import urllib.parse
 import sys
 import dataclasses
 
-SLEEP_TIME_SECONDS_WRITE = 1
+SLEEP_TIME_SECONDS_WRITE = 0
 SLEEP_TIME_SECONDS_READ = 0
-SLEEP_TIME_SECONDS_DELETE = 1
+SLEEP_TIME_SECONDS_DELETE = 0
 
 
 @dataclasses.dataclass

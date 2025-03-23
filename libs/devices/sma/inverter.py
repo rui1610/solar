@@ -1,7 +1,7 @@
 from dotenv import dotenv_values
-from libs.constants.files import FILE_CONFIG_SECRETS, FILE_CONFIG_SMA_METADATA
+from libs.constants.files import FILE_CONFIG_SECRETS
+from libs.constants.sma_inverter import CHANNELS_METADATA, CHANNELS_TO_USE
 from libs.model.openhab import ThingConfig
-from libs.constants.sma_inverter import CHANNELS_TO_USE
 import os
 import dataclasses
 import json
@@ -20,28 +20,24 @@ class SmaModbusMeasurement:
     category: str
     unit: str
 
-    def __init__(self, raw_modbusData: dict, raw_config: dict, device_info: str):
-        self.address = raw_config["address"]
-        self.unit = raw_config["unit"]
-        self.name = raw_config["name"]
-        self.transformation = raw_config.get("transformation")
-        self.device_name = device_info
-        self.category = raw_config.get("category")
-
-        for thing in raw_modbusData:
-            if thing["SMA Modbus Registeradresse"] == self.address:
-                # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
-                if thing["SMA Modbus Datentyp"] in [
-                    "U32",
-                    "S32",
-                    "U64",
-                    "S64",
-                    "U16",
-                    "S16",
-                ]:
-                    self.length, self.valueType = getValueType(
-                        thing["SMA Modbus Datentyp"]
-                    )
+    def __init__(self, thing: dict, device_info: str):
+        if thing["modbus_datatype"] in [
+            "U32",
+            "S32",
+            "U64",
+            "S64",
+            "U16",
+            "S16",
+        ]:
+            self.address = str(thing["modbus_address"])
+            self.device_name = device_info
+            self.length, self.valueType = getValueType(thing["modbus_datatype"])
+            self.unit = thing.get("openhab_unit")
+            self.name = thing.get("name")
+            self.transformation = thing.get("openhab_transformation")
+            self.category = thing.get("openhab_category")
+        else:
+            self.valueType = None
 
 
 @dataclasses.dataclass
@@ -80,7 +76,7 @@ class SmaInverterModbusBridge(ThingConfig):
             "host": ip_address,
             "id": modbus_id,
             "port": modbus_port,
-            "modbus_channel_config": get_modbus_things(),
+            "modbus_channel_config": get_modbus_things(useAll=False),
         }
         self.configuration_for_setup = {
             "host": ip_address,
@@ -95,21 +91,43 @@ class SmaInverterModbusBridge(ThingConfig):
 
 
 def get_modbus_things(useAll: bool = False) -> list[SmaModbusMeasurement]:
-    allModbusData = None
-    with open(FILE_CONFIG_SMA_METADATA, "r") as f:
-        allModbusData = json.load(f)
+    allModbusData = CHANNELS_METADATA
 
     modbusMeasurements = []
-    for device in CHANNELS_TO_USE:
-        for measurement in device["measurements"]:
-            thisMeasurement = SmaModbusMeasurement(
-                raw_modbusData=allModbusData,
-                raw_config=measurement,
-                device_info=device["deviceName"],
-            )
+
+    for channel in CHANNELS_METADATA:
+        thisMeasurement = SmaModbusMeasurement(
+            thing=channel,
+            device_info="GENERIC",
+        )
+        if thisMeasurement.valueType is not None:
             modbusMeasurements.append(thisMeasurement)
 
-    return modbusMeasurements
+    if useAll is True:
+        return modbusMeasurements
+    else:
+        modbusMeasurements_filtered = []
+        for device in CHANNELS_TO_USE:
+            for channel in device["channels"]:
+                for thing in allModbusData:
+                    if thing["modbus_address"] == str(channel):
+                        thisMeasurement = SmaModbusMeasurement(
+                            thing=thing,
+                            device_info=device["device_name"],
+                        )
+                        if thisMeasurement.valueType is not None:
+                            modbusMeasurements_filtered.append(thisMeasurement)
+        return modbusMeasurements_filtered
+
+
+def get_metadata_for_address(address: int):
+    allModbusData = CHANNELS_METADATA
+
+    for thing in allModbusData:
+        if thing["modbus_address"] == address:
+            return thing
+
+    return None
 
 
 def getValueType(rawValue: str):
