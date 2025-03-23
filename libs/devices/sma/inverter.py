@@ -1,7 +1,7 @@
 from dotenv import dotenv_values
-from libs.constants.files import FILE_CONFIG_SECRETS, FILE_CONFIG_SMA_METADATA
+from libs.constants.files import FILE_CONFIG_SECRETS
+from libs.constants.sma_inverter import CHANNELS_METADATA, CHANNELS_TO_USE
 from libs.model.openhab import ThingConfig
-from libs.constants.sma_inverter import CHANNELS_TO_USE
 import os
 import dataclasses
 import json
@@ -20,18 +20,13 @@ class SmaModbusMeasurement:
     category: str
     unit: str
 
-    def __init__(self, raw_modbusData: dict, raw_config: dict, device_info: str):
-        self.address = raw_config["address"]
-        self.unit = raw_config["unit"]
-        self.name = raw_config["name"]
-        self.transformation = raw_config.get("transformation")
+    def __init__(self, raw_modbusData: dict, channel: int, device_info: str):
+        self.address = str(channel)
         self.device_name = device_info
-        self.category = raw_config.get("category")
 
         for thing in raw_modbusData:
-            if thing["SMA Modbus Registeradresse"] == self.address:
-                # if thing["SMA Modbus Registeradresse"] in str(CHANNELS_TO_USE) and thing[
-                if thing["SMA Modbus Datentyp"] in [
+            if thing["modbus_address"] == self.address:
+                if thing["modbus_datatype"] in [
                     "U32",
                     "S32",
                     "U64",
@@ -39,9 +34,11 @@ class SmaModbusMeasurement:
                     "U16",
                     "S16",
                 ]:
-                    self.length, self.valueType = getValueType(
-                        thing["SMA Modbus Datentyp"]
-                    )
+                    self.length, self.valueType = getValueType(thing["modbus_datatype"])
+                self.unit = thing.get("openhab_unit")
+                self.name = thing.get("name")
+                self.transformation = thing.get("openhab_transformation")
+                self.category = thing.get("openhab_category")
 
 
 @dataclasses.dataclass
@@ -95,17 +92,15 @@ class SmaInverterModbusBridge(ThingConfig):
 
 
 def get_modbus_things(useAll: bool = False) -> list[SmaModbusMeasurement]:
-    allModbusData = None
-    with open(FILE_CONFIG_SMA_METADATA, "r") as f:
-        allModbusData = json.load(f)
+    allModbusData = CHANNELS_METADATA
 
     modbusMeasurements = []
     for device in CHANNELS_TO_USE:
-        for measurement in device["measurements"]:
+        for channel in device["channels"]:
             thisMeasurement = SmaModbusMeasurement(
                 raw_modbusData=allModbusData,
-                raw_config=measurement,
-                device_info=device["deviceName"],
+                channel=channel,
+                device_info=device["device_name"],
             )
             modbusMeasurements.append(thisMeasurement)
 
