@@ -1,11 +1,11 @@
 CHANNELS_TO_USE = [
     {
         "device_name": "Batterie",
-        "channels": [30865, 31395, 31393, 30849, 30847, 30845],
+        "channels": [31395, 31393, 30849, 30847, 30845],
     },
     {
         "device_name": "Netz",
-        "channels": [32341, 30867],
+        "channels": [30865],
     },
     # {
     #     "device_name": "Haus",
@@ -13,13 +13,15 @@ CHANNELS_TO_USE = [
     # },
     {
         "device_name": "Solaranlage",
-        "channels": [30529, 30517, 30775],
+        "channels": [30529, 30517, 30775, 30867],
     },
     {
         "device_name": "SMA Wechselrichter",
         "channels": [30953],
     },
 ]
+
+CHANNELS_NOT_TO_USE = []
 
 
 CHANNELS_METADATA = [
@@ -1226,7 +1228,7 @@ CHANNELS_METADATA = [
     {
         "modbus_channel": "Metering.GridMs.TotWOut",
         "object_type": "Messwert",
-        "name": "Leistung Einspeisung",
+        "name": "Eingespeiste Leistung ins Netz",
         "read_level": "",
         "group_full": "AC-Seite > Messwerte > Netzmessungen > Eingespeiste Leistung",
         "possible_values": "-",
@@ -2222,7 +2224,7 @@ CHANNELS_METADATA = [
     {
         "modbus_channel": "GridMs.TotW",
         "object_type": "Messwert",
-        "name": "Aktuell verbrauchte Leistung",
+        "name": "Aktuell erzeugte Leistung",
         "read_level": "",
         "group_full": "AC-Seite > Netzmessungen > Leistung",
         "possible_values": "-",
