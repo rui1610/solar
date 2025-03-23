@@ -56,17 +56,17 @@ CHANNELS_TO_USE = [
             },
         ],
     },
-    {
-        "deviceName": "Haus",
-        "measurements": [
-            {
-                "address": "30775",
-                "name": "Leistungsaufnahme aktuell",
-                "unit": "%.1f W",
-                "category": "power",
-            },
-        ],
-    },
+    # {
+    #     "deviceName": "Haus",
+    #     "measurements": [
+    #         {
+    #             "address": "30775",
+    #             "name": "Leistungsaufnahme aktuell",
+    #             "unit": "%.1f W",
+    #             "category": "power",
+    #         },
+    #     ],
+    # },
     {
         "deviceName": "Solaranlage",
         "measurements": [
@@ -83,6 +83,40 @@ CHANNELS_TO_USE = [
                 "transformation": "JS( | parseFloat(input) / 1000 )",
                 "unit": "%.1f kWh",
                 "category": "energy",
+            },
+            {
+                "address": "30517",
+                "name": "Tagesertrag gesamt",
+                "transformation": "JS( | parseFloat(input) / 1000 )",
+                "unit": "%.1f kWh",
+                "category": "energy",
+            },
+            {
+                "address": "30535",
+                "name": "Tagesertrag gesamt",
+                "transformation": "JS( | parseFloat(input) / 1000 )",
+                "unit": "%.1f kWh",
+                "category": "energy",
+            },
+            {
+                "address": "30537",
+                "name": "Tagesertrag gesamt",
+                "transformation": "JS( | parseFloat(input) / 1000 )",
+                "unit": "%.1f kWh",
+                "category": "energy",
+            },
+            {
+                "address": "30539",
+                "name": "Tagesertrag gesamt",
+                "transformation": "JS( | parseFloat(input) / 1000 )",
+                "unit": "%.1f kWh",
+                "category": "energy",
+            },
+            {
+                "address": "30775",
+                "name": "Erzeugung aktuell",
+                "unit": "%.1f W",
+                "category": "power",
             },
         ],
     },
