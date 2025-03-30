@@ -121,16 +121,19 @@ def extract_all_vals(data):
     result = []
     # iterate over the keys and map it  to RAW_KEYS_MAPPING
     for key, value in extracted_vals.items():
-        for mapping in RAW_KEYS_MAPPING:
-            # if the key is in the RAW_KEYS_MAPPING
-            if key == mapping["key"]:
-                # get the name of the key
-                name = mapping["name"]
-                # create a new object with the key, name and value
-                item = SMAInverterValue(key=key, name=name, value=value)
+        name = getMappedNameForKey(key)
+        # create a new object with the key, name and value
+        item = SMAInverterValue(key=key, name=name, value=value)
 
-                # if the item is not in the result list, add it
-                if item not in result:
-                    result.append(item)
+        # if the item is not in the result list, add it
+        if item not in result:
+            result.append(item)
 
     return result
+
+
+def getMappedNameForKey(key):
+    # get the name for the key from the mapping in RAW_KEYS_MAPPING
+    for item in RAW_KEYS_MAPPING:
+        if item["key"] == key:
+            return item["name"]

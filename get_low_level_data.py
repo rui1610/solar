@@ -14,4 +14,6 @@ values = smaInverter.getValues()
 
 smaInverter.logout()
 
-print(values)
+
+for value in values:
+    print(value)
