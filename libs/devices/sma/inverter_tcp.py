@@ -137,3 +137,28 @@ def getMappedNameForKey(key):
     for item in RAW_KEYS_MAPPING:
         if item["key"] == key:
             return item["name"]
+
+
+def sentRequest(url: str, headers: str, data: str):
+    """
+    Sends a request to the SMA inverter.
+
+    Args:
+        url (str): The URL to send the request to.
+        headers (str): The headers to include in the request.
+        data (str): The data to include in the request.
+
+    Returns:
+        The response from the request.
+    """
+    try:
+        response = requests.post(
+            url=url,
+            headers=headers,
+            verify=False,
+            data=json.dumps(data),
+        )
+        return response
+    except requests.exceptions.RequestException as e:
+        print(e)
+        return None

@@ -2722,19 +2722,11 @@ RAW_KEYS = [
 RAW_KEYS_MAPPING = [
     {"key": "6100_0046C200", "name": "Solarleistung aktuell"},
     {"key": "6100_00496A00", "name": "Batterie-Entladung aktuell"},
-    {"key": "6100_40263F00", "name": "Solarleistung aktuell"},
+    {"key": "6100_40263F00", "name": "Hausverbrauch aktuell"},
     {"key": "6400_00260100", "name": "Ertrag gesamt"},
-    {"key": "6400_00462500", "name": "Energieaustausch am Netzanschlusspunkt gesamt"},
+    {"key": "6400_00462500", "name": "Bezug Energie vom Netz gesamt"},
+    {"key": "6400_00462400", "name": "Einspeisung Energie ins Netz gesamt"},
     {"key": "6100_00295A00", "name": "Batterie Level aktuell"},
+    {"key": "6400_00496700", "name": "Batterie Ladung aktuell"},
+    {"key": "6400_00496800", "name": "Batterie Entladung aktuell"},
 ]
-
-
-"6800_00823400"
-"6180_104A9A00"
-"6180_104AB700"
-"6180_084ABC00"
-"6180_084A9600"
-"6180_084A9800"
-"6100_004AB600"
-"6800_088A4D00"
-"6180_084A6400"
