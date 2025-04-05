@@ -26,6 +26,29 @@ class SMAInverterClient:
         self.ip_address = CONFIG["SMA_INVERTER_IP"]
         self.token = getToken()
 
+    def getAllValues(self):
+        result = []
+        url = f"{BASE_URL}/dyn/getValues.json?sid={self.token}"
+        headers = {"Content-type": "application/json"}
+
+        all_keys = RAW_KEYS
+
+        # remove all duplicates from the list
+        all_keys = list(dict.fromkeys(all_keys))
+
+        # order the list
+        all_keys.sort()
+
+        for key in all_keys:
+            data = {"destDev": [], "keys": [key]}
+            response = sentRequest(url, headers, data)
+            temp = response.json()
+            item = extract_all_vals(temp)
+            if item is not None and len(item) > 0:
+                result.append(item)
+
+        return result
+
     def getValues(self):
         url = f"{BASE_URL}/dyn/getValues.json?sid={self.token}"
         headers = {"Content-type": "application/json"}
@@ -70,7 +93,9 @@ def getToken():
         return None
     # get the response code
 
-    return response.json()["result"]["sid"]
+    token = response.json()["result"]["sid"]
+
+    return token
 
 
 def extract_all_vals(data):

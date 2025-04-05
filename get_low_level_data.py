@@ -10,7 +10,7 @@ openhab = OpenhabClient()
 
 smaInverter = SMAInverterClient()
 
-values = smaInverter.getValues()
+values = smaInverter.getAllValues()
 
 smaInverter.logout()
 
