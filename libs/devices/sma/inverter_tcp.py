@@ -32,36 +32,20 @@ class SMAInverterClient:
 
         data = {"destDev": [], "keys": RAW_KEYS}
 
-        try:
-            response = requests.post(
-                url=url, headers=headers, verify=False, data=json.dumps(data)
-            )
-            response_code = response.status_code
-            if response_code != 200:
-                print(f"Error getting values: {response_code}")
-                self.logout()
-                return None
-            response_result = response.json()
-
-            result = extract_all_vals(response_result)
-
-            return result
-        except requests.exceptions.RequestException as e:
-            print(f"Error getting values: {e}")
+        response = sentRequest(url, headers, data)
+        if response is None:
             self.logout()
-            return None
 
     def logout(self):
         url = f"{BASE_URL}/dyn/logout.json?sid={self.token}"
         headers = {"Content-type": "application/json"}
 
-        try:
-            response = requests.post(url=url, headers=headers, verify=False)
-            print("logout", response.json())
-            return None
-        except requests.exceptions.RequestException as e:
-            print(e)
-            return None
+        response = sentRequest(url, headers, None)
+
+        if response is None:
+            print("Error logging out")
+
+        return None
 
 
 def getToken():
@@ -78,16 +62,8 @@ def getToken():
         "right": user,
         "pass": password,
     }
-    try:
-        response = requests.post(
-            url=url,
-            headers=headers,
-            data=json.dumps(data),
-            verify=False,
-        )
-    except requests.exceptions.RequestException as e:
-        print(e)
-        return None
+    response = sentRequest(url, headers, data)
+
     response_code = response.status_code
     if response_code != 200:
         print(f"Error getting token: {response_code}")
