@@ -1,7 +1,7 @@
 CHANNELS_TO_USE = [
     {
         "device_name": "Batterie",
-        "channels": [31395, 31393, 30849, 30847, 30845],
+        "channels": [31395, 31393, 30849, 30847, 30845, 32205],
     },
     {
         "device_name": "Netz",
@@ -9,7 +9,7 @@ CHANNELS_TO_USE = [
     },
     {
         "device_name": "Solaranlage",
-        "channels": [30529, 30517, 30867],  # 30775
+        "channels": [30529, 30867, 30535],  # 30775
     },
     {
         "device_name": "SMA Wechselrichter",
@@ -37,6 +37,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "S32",
         "modbus_dataformat": "TEMP",
         "modbus_access": "RO",
+        "unit": "°C",
         "openhab_transformation": "JS( | parseFloat(input) / 10 )",
         "openhab_unit": "%.1f °C",
         "openhab_category": "temperature",
@@ -742,6 +743,7 @@ CHANNELS_METADATA = [
         "modbus_access": "RO",
         "openhab_transformation": "JS( | parseFloat(input) / 1000 )",
         "openhab_unit": "%.1f kWh",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.DyWhOut",
@@ -1241,6 +1243,7 @@ CHANNELS_METADATA = [
         "modbus_access": "RO",
         "openhab_unit": "%.1f W",
         "openhab_category": "solarplant",
+        "unit": "W",
     },
     {
         "modbus_channel": "Metering.GridMs.TotWOut",
@@ -1276,6 +1279,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.GridMs.TotWIn",
@@ -1294,6 +1298,7 @@ CHANNELS_METADATA = [
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
         "openhab_unit": "%.1f W",
+        "unit": "W",
     },
     {
         "modbus_channel": "Metering.GridMs.TotWhIn",
@@ -1311,6 +1316,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Bat.ChaCtlComAval",
@@ -1482,6 +1488,7 @@ CHANNELS_METADATA = [
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
         "openhab_category": "battery",
+        "unit": "%",
     },
     {
         "modbus_channel": "Operation.ComRsTms",
@@ -1550,6 +1557,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U64",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.TotWhOut",
@@ -1570,6 +1578,7 @@ CHANNELS_METADATA = [
         "openhab_transformation": "JS( | parseFloat(input) / 1000 )",
         "openhab_unit": "%.1f kWh",
         "openhab_category": "solarplant",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.TotWhOut",
@@ -1638,6 +1647,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "%",
         "openhab_unit": "%d%%",
         "openhab_category": "batterylevel",
     },
@@ -1708,6 +1718,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "W",
         "openhab_unit": "%.1f W",
         "openhab_category": "battery",
     },
@@ -1761,6 +1772,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "W",
         "openhab_unit": "%.1f W",
         "openhab_category": "battery",
     },
@@ -1800,6 +1812,7 @@ CHANNELS_METADATA = [
         "openhab_unit": "%.1f °C",
         "openhab_transformation": "JS( | parseFloat(input) / 10 )",
         "openhab_category": "temperature",
+        "unit": "°C",
     },
     {
         "modbus_channel": "Coolsys.Cab.TmpVal",
