@@ -2,9 +2,10 @@ from libs.devices.sma.inverter_modbus import SmaModbus
 
 myInverter = SmaModbus()
 myInverter.connect()
-myInverter.getValues()
+# myInverter.getValues()
+myInverter.getAllValues()
 myInverter.close()
 for measurement in myInverter.values:
     print(
-        f"{measurement.channel} - {measurement.name} = {measurement.value} {measurement.unit}"
+        f"{measurement.address} - {measurement.channel} {measurement.value} {measurement.unit}"
     )

@@ -1,21 +1,30 @@
-CHANNELS_TO_USE = [
-    {
-        "device_name": "Batterie",
-        "channels": [31395, 31393, 30849, 30847, 30845, 32205],
-    },
-    {
-        "device_name": "Netz",
-        "channels": [30865, 30583, 30581, 30513],
-    },
-    {
-        "device_name": "Solaranlage",
-        "channels": [30529, 30867, 30535],  # 30775
-    },
-    {
-        "device_name": "SMA Wechselrichter",
-        "channels": [30953],
-    },
-]
+# Gesamtertrag	2.540.354 Wh
+# Tagesertrag	14.041 Wh
+# Leistung Einspeisung	2 W
+# Leistung Bezug	0 W
+# Zählerstand Einspeisezähler	1.435.026 Wh
+# Zählerstand Bezugszähler	1.966.583 Wh
+
+# PV Erzeugung
+# Leistung PV-Erzeugung	0 W
+# Zählerstand PV Erzeugungszähler	2.764.229 Wh
+
+# Netzmessungen Wechselrichter
+# Leistung	491 W
+
+# Batterie
+# Aktueller Batterieladezustand	59 %
+# Batterietemperatur	20,0 °C
+# Aktuelle Batteriekapazität	99 %
+# Momentane Batterieladung	0 W
+# Batterieladung	753.233 Wh
+# Ladung der aktuellen Batterie	670.128 Wh
+
+# Momentane Batterieentladung	491 W
+# Batterieentladung	519.886 Wh
+# Batterieentladung der aktuellen Batterie	588.598 Wh
+
+CHANNELS_TO_USE = [30775, 30529, 30535, 30537, 30867, 30583, 30845, 31395, 30865, 30849]
 
 CHANNELS_NOT_TO_USE = []
 
