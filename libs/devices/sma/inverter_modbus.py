@@ -100,7 +100,7 @@ class SmaModbus:
                     f"  - Storing value for address {thisAddress} - {measurement.channel} {measurement.value} {measurement.unit}"
                 )
                 # Create a filename based on the address and channel
-                filename = f"{FOLDER_DATA_DEVICES_SMA}/{measurement.address}.csv"
+                filename = f"{FOLDER_DATA_DEVICES_SMA}/{measurement.address}_{measurement.name}.csv"
                 # Get the current date
                 today = datetime.date.today()
                 # Create a timestamp
