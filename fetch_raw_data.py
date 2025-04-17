@@ -6,7 +6,7 @@ myInverter.connect()
 myInverter.getAllValues()
 myInverter.close()
 myInverter.storeValuesInFiles()
-for measurement in myInverter.values:
-    print(
-        f"{measurement.address} - {measurement.channel} {measurement.value} {measurement.unit}"
-    )
+# for measurement in myInverter.values:
+#     print(
+#         f"{measurement.address} - {measurement.channel} {measurement.value} {measurement.unit}"
+#     )

@@ -76,6 +76,8 @@ class SmaModbus:
 
             else:
                 print("Error reading register")
+        # sort the values by address
+        self.values.sort(key=lambda x: x.address)
 
     # Save all the values from the SMA inverter to a file.
     # Create a CSV file for each address and store the current value with the timestamp.
@@ -89,8 +91,13 @@ class SmaModbus:
         # Create the folder if it does not exist
         Path(FOLDER_DATA_DEVICES_SMA).mkdir(parents=True, exist_ok=True)
 
+        print(f" - {len(self.values)} values read from the inverter")
         for measurement in self.values:
-            if int(measurement.address) in CHANNELS_TO_STORE:
+            thisAddress = int(measurement.address)
+            if thisAddress in CHANNELS_TO_STORE:
+                print(
+                    f"  - Storing value for address {thisAddress} - {measurement.channel} {measurement.value} {measurement.unit}"
+                )
                 # Create a filename based on the address and channel
                 filename = f"{FOLDER_DATA_DEVICES_SMA}/{measurement.address}.csv"
                 # Get the current date
@@ -114,7 +121,6 @@ class SmaModbus:
                                     )
                                     with open(filename, "w") as f_write:
                                         f_write.writelines(lines)
-                                    return
                 else:
                     # If the file does not exist, create it and write the header
                     with open(filename, "w") as f:
