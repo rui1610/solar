@@ -2,6 +2,7 @@ FROM python:3.10-slim-bullseye AS picrobo
 
 ENV APPNAME=picrobo
 ENV HOME_FOLDER=/$APPNAME
+ENV TZ="Europe/Berlin"
 WORKDIR $HOME_FOLDER
 
 COPY requirements.txt /tmp/pip-tmp/requirements.txt
