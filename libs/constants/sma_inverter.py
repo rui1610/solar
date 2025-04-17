@@ -25,6 +25,7 @@
 # Batterieentladung der aktuellen Batterie	588.598 Wh
 
 CHANNELS_TO_USE = [30775, 30529, 30535, 30537, 30867, 30583, 30845, 31395, 30865, 30849]
+CHANNELS_TO_STORE = [30535, 30529, 30581, 30583]
 
 CHANNELS_NOT_TO_USE = []
 
@@ -765,6 +766,7 @@ CHANNELS_METADATA = [
         "step_size": "1",
         "write_level": "-",
         "grid_guard": "-",
+        "unit": "Wh",
         "modbus_address": "30537",
         "modbus_address_length": "2",
         "modbus_datatype": "U32",
