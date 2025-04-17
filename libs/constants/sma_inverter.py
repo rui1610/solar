@@ -1,21 +1,31 @@
-CHANNELS_TO_USE = [
-    {
-        "device_name": "Batterie",
-        "channels": [31395, 31393, 30849, 30847, 30845],
-    },
-    {
-        "device_name": "Netz",
-        "channels": [30865],
-    },
-    {
-        "device_name": "Solaranlage",
-        "channels": [30529, 30517, 30867],  # 30775
-    },
-    {
-        "device_name": "SMA Wechselrichter",
-        "channels": [30953],
-    },
-]
+# Gesamtertrag	2.540.354 Wh
+# Tagesertrag	14.041 Wh
+# Leistung Einspeisung	2 W
+# Leistung Bezug	0 W
+# Zählerstand Einspeisezähler	1.435.026 Wh
+# Zählerstand Bezugszähler	1.966.583 Wh
+
+# PV Erzeugung
+# Leistung PV-Erzeugung	0 W
+# Zählerstand PV Erzeugungszähler	2.764.229 Wh
+
+# Netzmessungen Wechselrichter
+# Leistung	491 W
+
+# Batterie
+# Aktueller Batterieladezustand	59 %
+# Batterietemperatur	20,0 °C
+# Aktuelle Batteriekapazität	99 %
+# Momentane Batterieladung	0 W
+# Batterieladung	753.233 Wh
+# Ladung der aktuellen Batterie	670.128 Wh
+
+# Momentane Batterieentladung	491 W
+# Batterieentladung	519.886 Wh
+# Batterieentladung der aktuellen Batterie	588.598 Wh
+
+CHANNELS_TO_USE = [30775, 30529, 30535, 30537, 30867, 30583, 30845, 31395, 30865, 30849]
+CHANNELS_TO_STORE = [30535, 30529, 30581, 30583]
 
 CHANNELS_NOT_TO_USE = []
 
@@ -37,6 +47,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "S32",
         "modbus_dataformat": "TEMP",
         "modbus_access": "RO",
+        "unit": "°C",
         "openhab_transformation": "JS( | parseFloat(input) / 10 )",
         "openhab_unit": "%.1f °C",
         "openhab_category": "temperature",
@@ -742,6 +753,7 @@ CHANNELS_METADATA = [
         "modbus_access": "RO",
         "openhab_transformation": "JS( | parseFloat(input) / 1000 )",
         "openhab_unit": "%.1f kWh",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.DyWhOut",
@@ -754,6 +766,7 @@ CHANNELS_METADATA = [
         "step_size": "1",
         "write_level": "-",
         "grid_guard": "-",
+        "unit": "Wh",
         "modbus_address": "30537",
         "modbus_address_length": "2",
         "modbus_datatype": "U32",
@@ -1241,6 +1254,7 @@ CHANNELS_METADATA = [
         "modbus_access": "RO",
         "openhab_unit": "%.1f W",
         "openhab_category": "solarplant",
+        "unit": "W",
     },
     {
         "modbus_channel": "Metering.GridMs.TotWOut",
@@ -1276,6 +1290,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.GridMs.TotWIn",
@@ -1294,6 +1309,7 @@ CHANNELS_METADATA = [
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
         "openhab_unit": "%.1f W",
+        "unit": "W",
     },
     {
         "modbus_channel": "Metering.GridMs.TotWhIn",
@@ -1311,6 +1327,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Bat.ChaCtlComAval",
@@ -1482,6 +1499,7 @@ CHANNELS_METADATA = [
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
         "openhab_category": "battery",
+        "unit": "%",
     },
     {
         "modbus_channel": "Operation.ComRsTms",
@@ -1550,6 +1568,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U64",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.TotWhOut",
@@ -1570,6 +1589,7 @@ CHANNELS_METADATA = [
         "openhab_transformation": "JS( | parseFloat(input) / 1000 )",
         "openhab_unit": "%.1f kWh",
         "openhab_category": "solarplant",
+        "unit": "Wh",
     },
     {
         "modbus_channel": "Metering.TotWhOut",
@@ -1638,6 +1658,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "%",
         "openhab_unit": "%d%%",
         "openhab_category": "batterylevel",
     },
@@ -1708,6 +1729,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "W",
         "openhab_unit": "%.1f W",
         "openhab_category": "battery",
     },
@@ -1761,6 +1783,7 @@ CHANNELS_METADATA = [
         "modbus_datatype": "U32",
         "modbus_dataformat": "FIX0",
         "modbus_access": "RO",
+        "unit": "W",
         "openhab_unit": "%.1f W",
         "openhab_category": "battery",
     },
@@ -1800,6 +1823,7 @@ CHANNELS_METADATA = [
         "openhab_unit": "%.1f °C",
         "openhab_transformation": "JS( | parseFloat(input) / 10 )",
         "openhab_category": "temperature",
+        "unit": "°C",
     },
     {
         "modbus_channel": "Coolsys.Cab.TmpVal",
@@ -2669,4 +2693,131 @@ CHANNELS_METADATA = [
         "modbus_dataformat": "DT",
         "modbus_access": "RO",
     },
+]
+
+
+RAW_KEYS = [
+    "6100_004F4E00",
+    "6800_0883D800",
+    "6100_002F7A00",
+    "6800_0883D900",
+    "6400_00432200",
+    "6400_00496700",
+    "6400_00496800",
+    "6100_00295A00",
+    "6180_08495E00",
+    "6100_00496900",
+    "6100_00496A00",
+    "6100_00696E00",
+    "6800_08A33A00",
+    "6100_40263F00",
+    "6100_0046C200",
+    "6800_00832A00",
+    "6180_08214800",
+    "6180_08414900",
+    "6180_08412B00",
+    "6400_00462500",
+    "6400_00462400",
+    "6100_40463700",
+    "6100_40463600",
+    "6800_08862500",
+    "6182_08434C00",
+    "6100_4046F200",
+    "6180_08412800",
+    "6400_00260100",
+    "6100_402F2000",
+    "6100_402F1E00",
+    "6800_088F2000",
+    "6800_088F2100",
+    "6800_10852400",
+    "6800_00853400",
+    "6180_08652600",
+    "6800_00852F00",
+    "6180_08652400",
+    "6180_08653A00",
+    "6100_00653100",
+    "6100_00653200",
+    "6800_08811F00",
+    "6400_00462E00",
+    "6800_08839500",
+    "6800_00823400",
+    "6180_104A9A00",
+    "6180_104AB700",
+    "6180_084ABC00",
+    "6180_084A9600",
+    "6180_084A9800",
+    "6100_004AB600",
+    "6800_088A4D00",
+    "6180_084A6400",
+    "6100_004F4E00",
+    "6800_0883D800",
+    "6100_002F7A00",
+    "6800_0883D900",
+    "6400_00432200",
+    "6400_00496700",
+    "6400_00496800",
+    "6100_00295A00",
+    "6180_08495E00",
+    "6100_00496900",
+    "6100_00496A00",
+    "6100_00696E00",
+    "6800_08A33A00",
+    "6800_008AA200",
+    "6100_40263F00",
+    "6100_0046C200",
+    "6800_00832A00",
+    "6180_08214800",
+    "6180_08414900",
+    "6180_08412B00",
+    "6400_00462500",
+    "6400_00462400",
+    "6100_40463700",
+    "6100_40463600",
+    "6800_08862500",
+    "6182_08434C00",
+    "6100_4046F200",
+    "6180_08412800",
+    "6400_00260100",
+    "6100_402F2000",
+    "6100_402F1E00",
+    "6800_088F2000",
+    "6800_088F2100",
+    "6800_10852400",
+    "6800_00853400",
+    "6180_08652600",
+    "6800_00852F00",
+    "6180_08652400",
+    "6180_08653A00",
+    "6100_00653100",
+    "6100_00653200",
+    "6800_08811F00",
+    "6400_00462E00",
+    "6800_08839500",
+    "6800_10821E00",
+    "6800_00A21E00",
+    "6800_10A22200",
+    "6800_08822B00",
+    "6800_08A33A00",
+    "6802_08872000",
+    "6800_08867200",
+    "6800_08822B00",
+    "6800_00A21E00",
+    "6800_10A22200",
+    "6800_08842300",
+    "6800_08852700",
+    "6800_10852500",
+    "6802_08A33300",
+    "6802_08A33D00",
+]
+
+RAW_KEYS_MAPPING = [
+    {"key": "6100_0046C200", "name": "Solarleistung aktuell"},
+    {"key": "6100_00496A00", "name": "Batterie-Entladung aktuell"},
+    {"key": "6100_40263F00", "name": "Hausverbrauch aktuell"},
+    {"key": "6400_00260100", "name": "Ertrag gesamt"},
+    {"key": "6400_00462500", "name": "Bezug Energie vom Netz gesamt"},
+    {"key": "6400_00462400", "name": "Einspeisung Energie ins Netz gesamt"},
+    {"key": "6100_00295A00", "name": "Batterie Level aktuell"},
+    {"key": "6400_00496700", "name": "Batterie Ladung aktuell"},
+    {"key": "6400_00496800", "name": "Batterie Entladung aktuell"},
 ]
