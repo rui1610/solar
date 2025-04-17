@@ -1,4 +1,5 @@
 dotenv
 openpyxl
+pymodbus
 pyModbusTCP
 streamlit
