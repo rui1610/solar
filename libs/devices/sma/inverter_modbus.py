@@ -57,25 +57,26 @@ class SmaModbus:
         for register in CHANNELS_METADATA:
             lengthRegister = int(register["modbus_address_length"])
             address = int(register["modbus_address"])
-            response = self.client.read_holding_registers(
-                address=address, count=lengthRegister, slave=3
-            )
-            if not response.isError():
-                # Convert register values (e.g. Float32)
-                raw_data = response.registers
-                value = (raw_data[0] << 16) + raw_data[1]
-                fullGroupName = register["group_full"]
-                # get the first string in the group name before the >
-                device = fullGroupName.split(">")[0]
-                thisMeasurement = buildMeasurement(
-                    raw=register,
-                    raw_value=value,
-                    device=device,
+            if address in CHANNELS_TO_STORE:
+                response = self.client.read_holding_registers(
+                    address=address, count=lengthRegister, slave=3
                 )
-                self.values.append(thisMeasurement)
+                if not response.isError():
+                    # Convert register values (e.g. Float32)
+                    raw_data = response.registers
+                    value = (raw_data[0] << 16) + raw_data[1]
+                    fullGroupName = register["group_full"]
+                    # get the first string in the group name before the >
+                    device = fullGroupName.split(">")[0]
+                    thisMeasurement = buildMeasurement(
+                        raw=register,
+                        raw_value=value,
+                        device=device,
+                    )
+                    self.values.append(thisMeasurement)
 
-            else:
-                print("Error reading register")
+                else:
+                    print("Error reading register")
         # sort the values by address
         self.values.sort(key=lambda x: x.address)
 
