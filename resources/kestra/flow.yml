@@ -1,5 +1,5 @@
 id: solar_fetch_data
-namespace: local.rui.solar
+namespace: rui.solar
 
 tasks:
   - id: file_system
@@ -12,13 +12,13 @@ tasks:
         branch: main
         username: rui1610
         password: "{{ kv('GITHUB_PAT') }}"
-        #directory: github_solar
 
       - id: python
         type: io.kestra.plugin.scripts.python.Commands
         containerImage: ghcr.io/kestra-io/pydata:latest
+        env:
+          TZ: Europe/Berlin
         beforeCommands:
-          #- apt install cmake
           - pip install -r .devcontainer/requirements.txt
           - export SMA_INVERTER_IP={{ kv('SMA_INVERTER_IP') }}
           - export SMA_INVERTER_PORT={{ kv('SMA_INVERTER_PORT') }}
@@ -27,7 +27,6 @@ tasks:
 
       - id: commit
         type: io.kestra.plugin.git.Push
-        url: https://github.com/rui1610/solar
         branch: main
         username: rui1610
         password: "{{ kv('GITHUB_PAT') }}"
