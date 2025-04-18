@@ -13,7 +13,7 @@ tasks:
         username: rui1610
         password: "{{ kv('GITHUB_PAT') }}"
 
-      - id: python
+      - id: fetch_raw_data
         type: io.kestra.plugin.scripts.python.Commands
         containerImage: ghcr.io/kestra-io/pydata:latest
         env:
@@ -25,9 +25,27 @@ tasks:
         commands:
           - python fetch_raw_data.py
 
-      - id: commit
+      - id: commit_and_push_new_data
         type: io.kestra.plugin.git.Push
         branch: main
         username: rui1610
         password: "{{ kv('GITHUB_PAT') }}"
         commitMessage: "updated measurement data {{ now() }}"
+
+triggers:
+  - id: expression_trigger_1
+    type: io.kestra.plugin.core.trigger.Schedule
+    # This is a cron expression that runs every day at 22:00
+    cron: "00 22 * * *"
+  - id: expression_trigger_2
+    type: io.kestra.plugin.core.trigger.Schedule
+    # This is a cron expression that runs every day at 23:00
+    cron: "00 23 * * *"   
+  - id: expression_trigger_3
+    type: io.kestra.plugin.core.trigger.Schedule
+    # This is a cron expression that runs every day at 23:58
+    cron: "58 23 * * *"
+  - id: expression_trigger_4
+    type: io.kestra.plugin.core.trigger.Schedule
+    # This is a cron expression that runs every day at 23:59
+    cron: "59 23 * * *"
