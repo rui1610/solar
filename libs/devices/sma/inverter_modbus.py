@@ -120,7 +120,7 @@ class SmaModbus:
                             lines[-1] = dataLine
                         else:
                             # If the date is different, add a new line
-                            lines.append(headerLine)
+                            lines.append(dataLine)
                         with open(filename, "w") as f_write:
                             f_write.writelines(lines)
                 else:
@@ -157,10 +157,8 @@ def buildLineForCsvFile(measurement: Measurement, allLines: list[str] = None) ->
         # Create a new line with the new value
         diff = measurement.value - float(last_value)
         line = f"{timestamp},{measurement.address},{measurement.value},{diff},{measurement.unit}\n"
-        # Check if the line is different from the last line
-        if line == last_line:
-            return line
-    return ""
+
+    return line
 
 
 def buildHeaderForCsvFile() -> str:
