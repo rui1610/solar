@@ -150,15 +150,40 @@ def buildLineForCsvFile(measurement: Measurement, allLines: list[str] = None) ->
     if allLines is None:
         return f"{timestamp},{measurement.address},{measurement.value},0,{measurement.unit}\n"
     else:
-        # Get the last line of the file
-        last_line = allLines[-1]
         # Get the last value from the line
-        last_value = last_line.split(",")[2]
+        last_value = getValueFromPreviousDay(allLines)
         # Create a new line with the new value
         diff = measurement.value - float(last_value)
         line = f"{timestamp},{measurement.address},{measurement.value},{diff},{measurement.unit}\n"
 
     return line
+
+
+def getValueFromPreviousDay(allLines: list[str]) -> float:
+    """
+    Get the value from the previous day.
+    """
+    # Get the last line of the file
+
+    result = 0.0
+
+    maxDate = None
+
+    for line in allLines:
+        # Get the last value from the line
+        last_value = line.split(",")[2]
+        # Get the date from the line
+        date = line.split(",")[0].split(" ")[0]
+        # If the date is different, return the value
+        if date < str(datetime.date.today()):
+            if maxDate is None:
+                maxDate = date
+                result = float(last_value)
+            else:
+                if date > maxDate:
+                    maxDate = date
+                    result = float(last_value)
+    return result
 
 
 def buildHeaderForCsvFile() -> str:
