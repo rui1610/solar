@@ -54,7 +54,9 @@ packaging==24.2
     #   altair
     #   streamlit
 pandas==2.2.3
-    # via streamlit
+    # via
+    #   -r requirements.in
+    #   streamlit
 pillow==11.2.1
     # via streamlit
 protobuf==5.29.4

@@ -103,78 +103,96 @@ class SmaModbus:
                 filename = f"{FOLDER_DATA_DEVICES_SMA}/{measurement.address}_{measurement.name}.csv"
                 # Get the current date
                 today = datetime.date.today()
-                # Create a timestamp
-                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                lines = readLinesFromCsvFile(filename)
+                headerLine = buildHeaderForCsvFile()
+                dataLine = buildLineForCsvFile(allLines=lines, measurement=measurement)
+
                 # Check if the file exists
                 if Path(filename).is_file():
-                    # If the file exists, append the new value to the file
-                    with open(filename, "a") as f:
-                        # only append the value if the date is different
-                        with open(filename, "r") as f_read:
-                            lines = f_read.readlines()
-                            if len(lines) > 1:
-                                last_line = lines[-1]
-                                last_date = last_line.split(",")[0].split(" ")[0]
-                                if last_date == str(today):
-                                    # If the date is the same, overwrite the value
-                                    lines[-1] = (
-                                        f"{timestamp},{measurement.value},{measurement.unit}\n"
-                                    )
-                                    with open(filename, "w") as f_write:
-                                        f_write.writelines(lines)
+                    # only append the value if the date is different
+
+                    if len(lines) > 1:
+                        last_line = lines[-1]
+                        last_date = last_line.split(",")[0].split(" ")[0]
+                        if last_date == str(today):
+                            # If the date is the same, overwrite the value
+                            lines[-1] = dataLine
+                        else:
+                            # If the date is different, add a new line
+                            lines.append(dataLine)
+                        with open(filename, "w") as f_write:
+                            f_write.writelines(lines)
                 else:
                     # If the file does not exist, create it and write the header
                     with open(filename, "w") as f:
-                        f.write("timestamp,value,unit\n")
-                        f.write(f"{timestamp},{measurement.value},{measurement.unit}\n")
+                        f.write(headerLine)
+                        f.write(dataLine)
 
-    def storeValuesInOneFile(self):
-        """
-        Store the values in one file.
-        """
-        # Create the folder if it does not exist
-        Path(FOLDER_DATA_DEVICES_SMA).mkdir(parents=True, exist_ok=True)
 
-        # Create a filename based on the address and channel
-        filename = f"{FOLDER_DATA_DEVICES_SMA}/all_values.csv"
-        # Get the current date
-        today = datetime.date.today()
-        # Create a timestamp
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # Check if the file exists
-        if Path(filename).is_file():
-            # If the file exists, append the new value to the file
-            with open(filename, "a") as f:
-                f.write(f"{timestamp},")
-                for measurement in self.values:
-                    # if it is the last measurement, do not add a comma
-                    if measurement == self.values[-1]:
-                        f.write(f"{measurement.value}")
-                    else:
-                        # write the value and add a comma
-                        f.write(f"{measurement.value},")
-                f.write("\n")
-        else:
-            # If the file does not exist, create it and write the header
-            with open(filename, "w") as f:
-                f.write("timestamp,")
-                for measurement in self.values:
-                    # if it is the last measurement, do not add a comma
-                    if measurement == self.values[-1]:
-                        f.write(f"{measurement.name}")
-                    else:
-                        # write the value and add a comma
-                        f.write(f"{measurement.name},")
-                f.write("\n")
-                f.write(f"{timestamp},")
-                for measurement in self.values:
-                    # if it is the last measurement, do not add a comma
-                    if measurement == self.values[-1]:
-                        f.write(f"{measurement.value}")
-                    else:
-                        # write the value and add a comma
-                        f.write(f"{measurement.value},")
-                f.write("\n")
+def readLinesFromCsvFile(filename: str) -> list[str]:
+    """
+    Read a CSV file and return the values as a list of strings.
+    """
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        return lines
+
+
+def buildLineForCsvFile(measurement: Measurement, allLines: list[str] = None) -> str:
+    """
+    Build a line for the CSV file.
+    """
+    # Create a timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Create a line for the CSV file
+    if allLines is None:
+        return f"{timestamp},{measurement.address},{measurement.value},0,{measurement.unit}\n"
+    else:
+        # Get the last value from the line
+        last_value = getValueFromPreviousDay(allLines)
+        # Create a new line with the new value
+        diff = measurement.value - float(last_value)
+        line = f"{timestamp},{measurement.address},{measurement.value},{diff},{measurement.unit}\n"
+
+    return line
+
+
+def getValueFromPreviousDay(allLines: list[str]) -> float:
+    """
+    Get the value from the previous day.
+    """
+    # Get the last line of the file
+
+    result = 0.0
+
+    maxDate = None
+
+    for line in allLines:
+        # Get the last value from the line
+        last_value = line.split(",")[2]
+        # Get the date from the line
+        date = line.split(",")[0].split(" ")[0]
+        # If the date is different, return the value
+        if date < str(datetime.date.today()):
+            if maxDate is None:
+                maxDate = date
+                result = float(last_value)
+            else:
+                if date > maxDate:
+                    maxDate = date
+                    result = float(last_value)
+    return result
+
+
+def buildHeaderForCsvFile() -> str:
+    """
+    Build a header for the CSV file.
+    """
+    # Create a header for the CSV file
+    header = "timestamp,address,value,diff,unit\n"
+    return header
 
 
 def buildMeasurement(raw: dict, raw_value: float, device: str) -> Measurement:
@@ -204,28 +222,3 @@ def buildMeasurement(raw: dict, raw_value: float, device: str) -> Measurement:
     return Measurement(
         address=address, channel=channel, name=name, unit=unit, value=value
     )
-
-
-def addValuesIfDateIsDifferent(
-    filename: str, today: datetime.date, measurement: Measurement
-):
-    """
-    Add values to the file if the date is different.
-    """
-    # Check if the file exists
-    if Path(filename).is_file():
-        # If the file exists, append the new value to the file
-        with open(filename, "a") as f:
-            # only append the value if the date is different
-            with open(filename, "r") as f_read:
-                lines = f_read.readlines()
-                if len(lines) > 1:
-                    last_line = lines[-1]
-                    last_date = last_line.split(",")[0].split(" ")[0]
-                    if last_date == str(today):
-                        # If the date is the same, overwrite the value
-                        lines[-1] = (
-                            f"{timestamp},{measurement.value},{measurement.unit}\n"
-                        )
-                        with open(filename, "w") as f_write:
-                            f_write.writelines(lines)
