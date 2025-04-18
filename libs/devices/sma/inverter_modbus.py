@@ -4,10 +4,8 @@ from libs.constants.files import FILE_CONFIG_SECRETS, FOLDER_DATA_DEVICES_SMA
 from pymodbus.client import ModbusTcpClient
 from libs.constants.sma_inverter import CHANNELS_METADATA, CHANNELS_TO_STORE
 import datetime
+import os
 from pathlib import Path
-
-# Load the configuration file
-CONFIG = dotenv_values(FILE_CONFIG_SECRETS)
 
 
 @dataclasses.dataclass
@@ -32,8 +30,16 @@ class SmaModbus:
     """
 
     def __init__(self):
-        host = CONFIG["SMA_INVERTER_IP"]
-        port = CONFIG["SMA_INVERTER_PORT"]
+        CONFIG = getEnvironmentVariables()
+        host = None
+        port = None
+
+        if CONFIG is None:
+            host = os.environ.get("SMA_INVERTER_IP")
+            port = os.environ.get("SMA_INVERTER_PORT")
+        else:
+            host = CONFIG["SMA_INVERTER_IP"]
+            port = CONFIG["SMA_INVERTER_PORT"]
         self.client = ModbusTcpClient(host=host, port=port)
 
     def connect(self):
@@ -222,3 +228,18 @@ def buildMeasurement(raw: dict, raw_value: float, device: str) -> Measurement:
     return Measurement(
         address=address, channel=channel, name=name, unit=unit, value=value
     )
+
+
+def getEnvironmentVariables():
+    """
+    Get the environment variables from the .env file.
+    """
+    # Load the environment variables from the .env file
+
+    # Check if the file exists
+    if not Path(FILE_CONFIG_SECRETS).is_file():
+        print(f"File {FILE_CONFIG_SECRETS} does not exist")
+        return None
+
+    env = dotenv_values(FILE_CONFIG_SECRETS)
+    return env
