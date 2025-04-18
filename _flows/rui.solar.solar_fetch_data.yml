@@ -1,0 +1,32 @@
+id: solar_fetch_data
+namespace: rui.solar
+
+tasks:
+  - id: file_system
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+
+    tasks:
+      - id: clone
+        type: io.kestra.plugin.git.Clone
+        url: https://github.com/rui1610/solar
+        branch: main
+        username: rui1610
+        password: "{{ kv('GITHUB_PAT') }}"
+        #directory: github_solar
+
+      - id: python
+        type: io.kestra.plugin.scripts.python.Commands
+        containerImage: ghcr.io/kestra-io/pydata:latest
+        beforeCommands:
+          - pip install -r .devcontainer/requirements.txt
+          - export SMA_INVERTER_IP={{ kv('SMA_INVERTER_IP') }}
+          - export SMA_INVERTER_PORT={{ kv('SMA_INVERTER_PORT') }}
+        commands:
+          - python fetch_raw_data.py
+
+      - id: commit
+        type: io.kestra.plugin.git.Push
+        branch: main
+        username: rui1610
+        password: "{{ kv('GITHUB_PAT') }}"
+        commitMessage: "updated measurement data {{ now() }}"
