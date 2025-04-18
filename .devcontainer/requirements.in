@@ -1,6 +1,5 @@
 dotenv
 openpyxl
-pandas
 pymodbus
 pyModbusTCP
 streamlit
