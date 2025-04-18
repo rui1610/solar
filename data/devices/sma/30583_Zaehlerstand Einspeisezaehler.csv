@@ -1,2 +1,2 @@
-timestamp,value,unit
-2025-04-17 22:34:51,1443570.0,Wh
+timestamp,address,value,diff,unit
+2025-04-17 22:34:51,1443570.0,0,Wh
