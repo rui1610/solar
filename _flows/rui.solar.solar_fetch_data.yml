@@ -17,6 +17,8 @@ tasks:
       - id: python
         type: io.kestra.plugin.scripts.python.Commands
         containerImage: ghcr.io/kestra-io/pydata:latest
+        env:
+          TZ: Europe/Berlin
         beforeCommands:
           - pip install -r .devcontainer/requirements.txt
           - export SMA_INVERTER_IP={{ kv('SMA_INVERTER_IP') }}
