@@ -120,61 +120,18 @@ class SmaModbus:
                                     lines[-1] = (
                                         f"{timestamp},{measurement.value},{measurement.unit}\n"
                                     )
-                                    with open(filename, "w") as f_write:
-                                        f_write.writelines(lines)
+                                else:
+                                    # If the date is different, add a new line
+                                    lines.append(
+                                        f"{timestamp},{measurement.value},{measurement.unit}\n"
+                                    )
+                                with open(filename, "w") as f_write:
+                                    f_write.writelines(lines)
                 else:
                     # If the file does not exist, create it and write the header
                     with open(filename, "w") as f:
                         f.write("timestamp,value,unit\n")
                         f.write(f"{timestamp},{measurement.value},{measurement.unit}\n")
-
-    def storeValuesInOneFile(self):
-        """
-        Store the values in one file.
-        """
-        # Create the folder if it does not exist
-        Path(FOLDER_DATA_DEVICES_SMA).mkdir(parents=True, exist_ok=True)
-
-        # Create a filename based on the address and channel
-        filename = f"{FOLDER_DATA_DEVICES_SMA}/all_values.csv"
-        # Get the current date
-        today = datetime.date.today()
-        # Create a timestamp
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # Check if the file exists
-        if Path(filename).is_file():
-            # If the file exists, append the new value to the file
-            with open(filename, "a") as f:
-                f.write(f"{timestamp},")
-                for measurement in self.values:
-                    # if it is the last measurement, do not add a comma
-                    if measurement == self.values[-1]:
-                        f.write(f"{measurement.value}")
-                    else:
-                        # write the value and add a comma
-                        f.write(f"{measurement.value},")
-                f.write("\n")
-        else:
-            # If the file does not exist, create it and write the header
-            with open(filename, "w") as f:
-                f.write("timestamp,")
-                for measurement in self.values:
-                    # if it is the last measurement, do not add a comma
-                    if measurement == self.values[-1]:
-                        f.write(f"{measurement.name}")
-                    else:
-                        # write the value and add a comma
-                        f.write(f"{measurement.name},")
-                f.write("\n")
-                f.write(f"{timestamp},")
-                for measurement in self.values:
-                    # if it is the last measurement, do not add a comma
-                    if measurement == self.values[-1]:
-                        f.write(f"{measurement.value}")
-                    else:
-                        # write the value and add a comma
-                        f.write(f"{measurement.value},")
-                f.write("\n")
 
 
 def buildMeasurement(raw: dict, raw_value: float, device: str) -> Measurement:
