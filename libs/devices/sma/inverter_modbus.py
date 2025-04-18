@@ -92,12 +92,12 @@ class SmaModbus:
         # Create the folder if it does not exist
         Path(FOLDER_DATA_DEVICES_SMA).mkdir(parents=True, exist_ok=True)
 
-        print(f" - {len(self.values)} values read from the inverter")
+        # print(f" - {len(self.values)} values read from the inverter")
         for measurement in self.values:
             thisAddress = int(measurement.address)
             if thisAddress in CHANNELS_TO_STORE:
                 print(
-                    f"  - Storing value for address {thisAddress} - {measurement.channel} {measurement.value} {measurement.unit}"
+                    f"Storing value for address {thisAddress} - {measurement.channel} {measurement.value} {measurement.unit}"
                 )
                 # Create a filename based on the address and channel
                 filename = f"{FOLDER_DATA_DEVICES_SMA}/{measurement.name}.csv"
