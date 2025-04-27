@@ -1,5 +1,9 @@
 dotenv
+ipython
 openpyxl
+pandas
 pymodbus
 pyModbusTCP
 streamlit
+seaborn
+
