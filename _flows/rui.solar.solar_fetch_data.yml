@@ -24,6 +24,7 @@ tasks:
           - export SMA_INVERTER_PORT={{ kv('SMA_INVERTER_PORT') }}
         commands:
           - python fetch_raw_data.py
+          - python create_charts.py
 
       - id: commit_and_push_new_data
         type: io.kestra.plugin.git.Push
