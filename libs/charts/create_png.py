@@ -15,7 +15,7 @@ import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
 
 
-def createPngStackedBars(
+def createPngBarChart(
     data: list,
     header: str,
     filename: str,
@@ -23,9 +23,9 @@ def createPngStackedBars(
     yValue: str = None,
     xLabel: str = None,
     yLabel: str = None,
+    stacked: bool = False,
     height=BARPLOT_HEIGHT,
     width=BARPLOT_WIDTH,
-    show_table=False,
 ):
     # merge the dataframes into a single dataframe with the same columns
 
@@ -38,7 +38,7 @@ def createPngStackedBars(
 
     ax = data.plot(
         kind="bar",
-        stacked=True,
+        stacked=stacked,
         x=xValue,
         figsize=(width, height),
         color=this_palette,
@@ -78,7 +78,7 @@ def createPngStackedBars(
     ax.set_xlabel(xLabel)
 
     # set the labels for the x-axis to be rotated 90 degrees
-    ax.tick_params(axis="x", labelrotation=90, labelsize=TEXT_SIZE_X_AXIS)
+    ax.tick_params(axis="x", labelrotation=45, labelsize=TEXT_SIZE_X_AXIS)
     ax.tick_params(axis="y", labelsize=TEXT_SIZE_Y_AXIS)
 
     for i in range(len(ax.containers)):
@@ -89,9 +89,12 @@ def createPngStackedBars(
             size=TEXT_SIZE_BAR_LABELS,
             padding=1,
             rotation=90,
-            fmt=lambda x: f"{x / divisor:.0f}{unit}",
+            # fmt=lambda x: f"{x / divisor:.0f}{unit}",
         )
         i += 1
+    # convert the x-axis labels to be in the format of YYYY-MM-DD
+    # ax.xaxis.set_major_formatter(mdates.DateFormatter("%d %m %Y"))
+
     # ----------------------------------------------
     # define y-axis
     # ----------------------------------------------
