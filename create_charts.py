@@ -4,66 +4,63 @@ from pathlib import Path
 from libs.charts.create_png import createPngBarChart
 from libs.dates.date_conversion import convert_date
 
-file = Path(FOLDER_DATA_DEVICES_SMA, "Zaehlerstand Bezugszaehler.csv")
-data_sma_bezug = read_csv_file(file)
-# reduce the data to the columns timestamp, diff
-data_sma_bezug = data_sma_bezug[["timestamp", "diff"]]
 
-file = Path(FOLDER_DATA_DEVICES_SMA, "Tagesertrag.csv")
-data_sma_tagesertrag = read_csv_file(file)
-# reduce the data to the columns timestamp, diff
-data_sma_tagesertrag = data_sma_tagesertrag[["timestamp", "value"]]
-# rename the columns
-data_sma_tagesertrag = data_sma_tagesertrag.rename(
-    columns={
-        "value": "diff",
-    }
+def fetch_data(file, xValue, yValue):
+    # file = Path(FOLDER_DATA_DEVICES_SMA, "Zaehlerstand Bezugszaehler.csv")
+    data = read_csv_file(file)
+    # reduce the data to the columns timestamp, diff
+    data = data[[xValue, yValue]]
+
+    if xValue == "timestamp":
+        # convert the column timestamp to a datetime object
+        data["timestamp"] = data["timestamp"].apply(
+            lambda x: convert_date(x, target_format="datetime")
+        )
+    return data
+
+
+def create_png_file(file, x_label, y_label, x_value, y_value):
+    data = fetch_data(file, x_value, y_value)
+
+    # Create the folder if it does not exist
+    Path(FOLDER_PNG_FILES).mkdir(parents=True, exist_ok=True)
+
+    # Create the PNG file
+    png_file = Path(FOLDER_PNG_FILES, f"{file.stem}.png")
+    createPngBarChart(
+        data=data,
+        header=file.stem,
+        filename=png_file,
+        xValue=x_value,
+        yValue=y_value,
+        xLabel=x_label,
+        yLabel=y_label,
+        height=5,
+        width=10,
+        # show_table=False,
+    )
+
+
+create_png_file(
+    file=Path(FOLDER_DATA_DEVICES_SMA, "Zaehlerstand Bezugszaehler.csv"),
+    x_label="Datum",
+    y_label="Wh",
+    x_value="timestamp",
+    y_value="diff",
 )
 
-file = Path(FOLDER_DATA_DEVICES_SMA, "Zaehlerstand Einspeisezaehler.csv")
-data_sma_einspeisung = read_csv_file(file)
-# reduce the data to the columns timestamp, diff
-data_sma_einspeisung = data_sma_einspeisung[["timestamp", "diff"]]
-
-# merge the dataframes data_sma_tagesertrag, data_sma_einspeisung and data_sma_bezug into a single dataframe with the same columns
-data = data_sma_tagesertrag.merge(
-    data_sma_einspeisung,
-    how="outer",
-    on="timestamp",
-    suffixes=("_tagesertrag", "_einspeisung"),
-).merge(
-    data_sma_bezug,
-    how="outer",
-    on="timestamp",
-    suffixes=("_einspeisung", "_bezug"),
-)
-# rename the columns
-data = data.rename(
-    columns={
-        "diff_tagesertrag": "Tagesertrag",
-        "diff_einspeisung": "Einspeisung",
-        "diff": "Bezug",
-    }
+create_png_file(
+    file=Path(FOLDER_DATA_DEVICES_SMA, "Tagesertrag.csv"),
+    x_label="Datum",
+    y_label="Wh",
+    x_value="timestamp",
+    y_value="value",
 )
 
-
-# convert the column timestamp to a datetime object
-data["timestamp"] = data["timestamp"].apply(
-    lambda x: convert_date(x, target_format="datetime")
+create_png_file(
+    file=Path(FOLDER_DATA_DEVICES_SMA, "Zaehlerstand Einspeisezaehler.csv"),
+    x_label="Datum",
+    y_label="Wh",
+    x_value="timestamp",
+    y_value="diff",
 )
-
-png_file = Path(FOLDER_PNG_FILES, "sma.png")
-createPngBarChart(
-    data=data,
-    header="SMA",
-    filename=png_file,
-    xValue="timestamp",
-    yValue="Einspeisung",
-    xLabel="Datum",
-    yLabel="Wh",
-    height=5,
-    width=10,
-    # show_table=False,
-)
-
-data = data
