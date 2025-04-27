@@ -34,11 +34,7 @@ tasks:
         commitMessage: "updated measurement data {{ now() }}"
 
 triggers:
-  - id: expression_trigger_2
-    type: io.kestra.plugin.core.trigger.Schedule
-    # This is a cron expression that runs every day at 23:00
-    cron: "00 23 * * *"   
-  - id: expression_trigger_4
+  - id: expression_trigger_1
     type: io.kestra.plugin.core.trigger.Schedule
     # This is a cron expression that runs every day at 23:59
     cron: "59 23 * * *"
