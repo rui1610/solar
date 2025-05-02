@@ -2,9 +2,9 @@
 
 ## SMA Device
 
-![Tagesertrag](./charts/Tagesertrag.png)
-![Bezug](./charts/Zaehlerstand%20Bezugszaehler.png)
-![Einspeisung](./charts/Zaehlerstand%20Einspeisezaehler.png)
+![Tagesertrag](./data/charts/Tagesertrag.png)
+![Bezug](./data/charts/Zaehlerstand%20Bezugszaehler.png)
+![Einspeisung](./data/charts/Zaehlerstand%20Einspeisezaehler.png)
 
 
 Based on https://hoerli.net/openhab-sma-wechselrichter-via-modbus-anbinden/
